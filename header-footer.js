@@ -427,6 +427,46 @@
     '  .nav-hamburger span {',
     '    transition: opacity 0.2s ease;',
     '  }',
+    '}',
+
+    /* --- Page transitions --- */
+    '.page-transition {',
+    '  position: fixed;',
+    '  inset: 0;',
+    '  background: var(--nav-parchment);',
+    '  z-index: 10000;',
+    '  opacity: 0;',
+    '  pointer-events: none;',
+    '  transition: opacity 0.3s ease;',
+    '}',
+    '.page-transition.active {',
+    '  opacity: 1;',
+    '  pointer-events: auto;',
+    '}',
+    'body {',
+    '  animation: pageEnter 0.5s ease both;',
+    '}',
+    '@keyframes pageEnter {',
+    '  from { opacity: 0; transform: translateY(8px); }',
+    '  to { opacity: 1; transform: translateY(0); }',
+    '}',
+    '@media (prefers-reduced-motion: reduce) {',
+    '  body { animation: none; }',
+    '  .page-transition { transition: none; }',
+    '}',
+
+    /* --- RTL nav direction fix: logo LEFT, hamburger RIGHT --- */
+    '.nav {',
+    '  direction: ltr;',
+    '}',
+    '.nav-links, .nav-links a, .nav-cta-btn, .nav-logo {',
+    '  direction: rtl;',
+    '}',
+    '.nav-mobile-header {',
+    '  direction: ltr;',
+    '}',
+    '.nav-mobile-logo {',
+    '  direction: rtl;',
     '}'
   ].join('\n');
 
@@ -490,7 +530,8 @@
     '  <div class="nav-mobile-cta-wrap">',
     '    <a href="contact-page-design.html" class="nav-mobile-cta">בואו נדבר</a>',
     '  </div>',
-    '</div>'
+    '</div>',
+    '<div class="page-transition" id="pageTransition"></div>'
   ].join('\n');
 
   /* ── Canonical footer HTML ───────────────────────────────── */
@@ -568,6 +609,9 @@
 
     /* Set up mobile slide-in nav */
     initMobileNav();
+
+    /* Set up page transitions */
+    initPageTransitions();
   });
 
   /* ── Nav scroll behaviour ────────────────────────────────── */
@@ -721,6 +765,41 @@
     if (ctaLink) {
       ctaLink.addEventListener('click', closePanel);
     }
+  }
+
+  /* ── Page transition behaviour ───────────────────────────── */
+  function initPageTransitions() {
+    var overlay = document.getElementById('pageTransition');
+    if (!overlay) return;
+
+    /* Intercept internal .html page links (not anchors, not external) */
+    document.addEventListener('click', function (e) {
+      var anchor = e.target.closest('a[href]');
+      if (!anchor) return;
+
+      var href = anchor.getAttribute('href');
+      if (!href) return;
+
+      /* Skip: hash-only anchors */
+      if (href.charAt(0) === '#') return;
+
+      /* Skip: external URLs (contain :// or start with //) */
+      if (href.indexOf('://') !== -1 || href.indexOf('//') === 0) return;
+
+      /* Skip: non-html links (mailto, tel, etc.) */
+      if (href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0) return;
+
+      /* Skip: target="_blank" */
+      if (anchor.getAttribute('target') === '_blank') return;
+
+      e.preventDefault();
+      var targetUrl = href;
+
+      overlay.classList.add('active');
+      setTimeout(function () {
+        window.location.href = targetUrl;
+      }, 300);
+    });
   }
 
 })();

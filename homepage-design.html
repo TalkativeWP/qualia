@@ -181,8 +181,8 @@ body {
 .hero {
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 700px;
+  height: 92vh;
+  min-height: 600px;
   overflow: hidden;
   background: var(--warm-dark);
 }
@@ -439,31 +439,6 @@ body {
   0% { top: -100%; }
   50% { top: 100%; }
   100% { top: 100%; }
-}
-
-/* Hero pause button */
-.hero__pause {
-  position: absolute;
-  bottom: 32px;
-  right: clamp(24px, 5vw, 80px);
-  z-index: 6;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(250, 246, 241, 0.3);
-  background: rgba(28, 25, 23, 0.3);
-  backdrop-filter: blur(8px);
-  color: var(--parchment);
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-}
-.hero__pause:hover {
-  background: rgba(28, 25, 23, 0.5);
-  border-color: rgba(250, 246, 241, 0.5);
 }
 
 @keyframes fadeInUp {
@@ -903,10 +878,19 @@ body {
   display: flex;
   gap: 2rem;
   transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.testimonial-track.is-dragging {
+  cursor: grabbing;
+  transition: none;
 }
 
 .testimonial-card {
   min-width: calc(50% - 1rem);
+  scroll-snap-align: start;
   background: white;
   border-radius: 20px;
   padding: 2.5rem;
@@ -1339,8 +1323,10 @@ textarea.form-input {
   .nav-links { display: none; }
   .hero__actions { flex-direction: column; align-items: flex-start; }
   .intro-stats { flex-direction: column; gap: 1.5rem; }
-  .testimonials { padding: 5rem 2.5rem; }
+  .testimonials { padding: 5rem 1.5rem; }
   .testimonials-header { flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+  .testimonial-card { min-width: calc(100% - 2rem); }
+  .testimonial-track { gap: 1rem; padding: 0 1rem; }
   .form-row { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
@@ -1435,10 +1421,6 @@ textarea.form-input {
     <button class="hero__dot" data-goto="1" aria-label="שקופית 2" aria-current="false"></button>
     <button class="hero__dot" data-goto="2" aria-label="שקופית 3" aria-current="false"></button>
   </div>
-
-  <button class="hero__pause" id="heroPause" aria-label="השהה מצגת שקפים" aria-pressed="false">
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-  </button>
 
   <!-- Live region: announces slide changes to screen readers -->
   <div id="heroLiveRegion" aria-live="polite" aria-atomic="true" class="sr-only"></div>
@@ -1757,7 +1739,6 @@ if (window.matchMedia('(pointer: fine)').matches) {
 var heroSlides = document.querySelectorAll('.hero__slide');
 var heroDots = document.querySelectorAll('.hero__dot');
 var wipeLine = document.getElementById('wipeLine');
-var pauseBtn = document.getElementById('heroPause');
 var currentSlide = 0;
 var isAnimating = false;
 var isPaused = false;
@@ -1892,38 +1873,12 @@ function resetAutoplay() {
   startAutoplay();
 }
 
-/* Pause / play button */
-var pauseIconSVG = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
-var playIconSVG = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>';
-
-pauseBtn.addEventListener('click', function() {
-  var liveRegion = document.getElementById('heroLiveRegion');
-  if (isPaused) {
-    isPaused = false;
-    pauseBtn.innerHTML = pauseIconSVG;
-    pauseBtn.setAttribute('aria-label', 'השהה מצגת שקפים');
-    pauseBtn.setAttribute('aria-pressed', 'false');
-    if (liveRegion) liveRegion.setAttribute('aria-live', 'polite');
-    startAutoplay();
-  } else {
-    isPaused = true;
-    stopAutoplay();
-    pauseBtn.innerHTML = playIconSVG;
-    pauseBtn.setAttribute('aria-label', 'הפעל מצגת שקפים');
-    pauseBtn.setAttribute('aria-pressed', 'true');
-    if (liveRegion) liveRegion.setAttribute('aria-live', 'off');
-  }
-});
-
 /* Gate autoplay on reduced-motion preference */
 var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (!prefersReducedMotion) {
   startAutoplay();
 } else {
   isPaused = true;
-  pauseBtn.innerHTML = playIconSVG;
-  pauseBtn.setAttribute('aria-label', 'הפעל מצגת שקפים');
-  pauseBtn.setAttribute('aria-pressed', 'true');
   var liveRegionInit = document.getElementById('heroLiveRegion');
   if (liveRegionInit) liveRegionInit.setAttribute('aria-live', 'off');
 }
@@ -1982,32 +1937,141 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
 
 // ============================================
-// TESTIMONIAL SLIDER
+// TESTIMONIAL SLIDER — buttons + drag/swipe
 // ============================================
-const track = document.getElementById('testimonialTrack');
-const prevBtn = document.getElementById('prevTestimonial');
-const nextBtn = document.getElementById('nextTestimonial');
-let tPos = 0;
+(function() {
+  var track = document.getElementById('testimonialTrack');
+  var prevBtn = document.getElementById('prevTestimonial');
+  var nextBtn = document.getElementById('nextTestimonial');
+  if (!track || !prevBtn || !nextBtn) return;
 
-function getCardWidth() {
-  const card = track.querySelector('.testimonial-card');
-  const gap = 32; // 2rem
-  return card.offsetWidth + gap;
-}
+  var tPos = 0;          // current translateX offset (negative = scrolled right in RTL)
+  var velocity = 0;
+  var animationId = null;
 
-function getMaxScroll() {
-  return Math.max(0, track.scrollWidth - track.parentElement.offsetWidth);
-}
+  function getCardWidth() {
+    var card = track.querySelector('.testimonial-card');
+    if (!card) return 300;
+    var gap = window.innerWidth <= 640 ? 16 : 32;
+    return card.offsetWidth + gap;
+  }
 
-nextBtn.addEventListener('click', () => {
-  tPos = Math.min(tPos + getCardWidth(), getMaxScroll());
-  track.style.transform = `translateX(${tPos}px)`;
-});
+  function getMaxScroll() {
+    return Math.max(0, track.scrollWidth - track.parentElement.offsetWidth);
+  }
 
-prevBtn.addEventListener('click', () => {
-  tPos = Math.max(tPos - getCardWidth(), 0);
-  track.style.transform = `translateX(${tPos}px)`;
-});
+  function snapToNearest() {
+    var cw = getCardWidth();
+    var snapped = Math.round(tPos / cw) * cw;
+    tPos = Math.max(0, Math.min(snapped, getMaxScroll()));
+    track.style.transition = 'transform 0.45s cubic-bezier(0.33, 1, 0.68, 1)';
+    track.style.transform = 'translateX(' + (-tPos) + 'px)';
+  }
+
+  function applyTransform(instant) {
+    if (instant) {
+      track.style.transition = 'none';
+    }
+    track.style.transform = 'translateX(' + (-tPos) + 'px)';
+  }
+
+  nextBtn.addEventListener('click', function() {
+    tPos = Math.min(tPos + getCardWidth(), getMaxScroll());
+    track.style.transition = 'transform 0.6s cubic-bezier(0.33, 1, 0.68, 1)';
+    track.style.transform = 'translateX(' + (-tPos) + 'px)';
+  });
+
+  prevBtn.addEventListener('click', function() {
+    tPos = Math.max(tPos - getCardWidth(), 0);
+    track.style.transition = 'transform 0.6s cubic-bezier(0.33, 1, 0.68, 1)';
+    track.style.transform = 'translateX(' + (-tPos) + 'px)';
+  });
+
+  /* ── Touch drag / swipe ── */
+  var touchStartX = 0;
+  var touchStartPos = 0;
+  var touchLastX = 0;
+  var touchLastTime = 0;
+
+  track.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartPos = tPos;
+    touchLastX = touchStartX;
+    touchLastTime = Date.now();
+    velocity = 0;
+    if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+    track.style.transition = 'none';
+  }, { passive: true });
+
+  track.addEventListener('touchmove', function(e) {
+    var dx = touchStartX - e.touches[0].clientX;
+    var now = Date.now();
+    var dt = now - touchLastTime;
+    if (dt > 0) {
+      velocity = (e.touches[0].clientX - touchLastX) / dt;
+    }
+    touchLastX = e.touches[0].clientX;
+    touchLastTime = now;
+    tPos = Math.max(0, Math.min(touchStartPos + dx, getMaxScroll()));
+    applyTransform(true);
+  }, { passive: true });
+
+  track.addEventListener('touchend', function() {
+    var momentum = -velocity * 150;
+    tPos = Math.max(0, Math.min(tPos + momentum, getMaxScroll()));
+    snapToNearest();
+  }, { passive: true });
+
+  /* ── Mouse drag ── */
+  var isDragging = false;
+  var mouseStartX = 0;
+  var mouseStartPos = 0;
+  var mousePrevX = 0;
+  var mousePrevTime = 0;
+
+  track.addEventListener('mousedown', function(e) {
+    if (e.button !== 0) return;
+    isDragging = true;
+    mouseStartX = e.clientX;
+    mouseStartPos = tPos;
+    mousePrevX = mouseStartX;
+    mousePrevTime = Date.now();
+    velocity = 0;
+    track.classList.add('is-dragging');
+    track.style.transition = 'none';
+    if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    var dx = mouseStartX - e.clientX;
+    var now = Date.now();
+    var dt = now - mousePrevTime;
+    if (dt > 0) {
+      velocity = (e.clientX - mousePrevX) / dt;
+    }
+    mousePrevX = e.clientX;
+    mousePrevTime = now;
+    tPos = Math.max(0, Math.min(mouseStartPos + dx, getMaxScroll()));
+    applyTransform(true);
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (!isDragging) return;
+    isDragging = false;
+    track.classList.remove('is-dragging');
+    var momentum = -velocity * 200;
+    tPos = Math.max(0, Math.min(tPos + momentum, getMaxScroll()));
+    snapToNearest();
+  });
+
+  /* Prevent link clicks after drag */
+  track.addEventListener('click', function(e) {
+    var dx = Math.abs(mouseStartX - e.clientX);
+    if (dx > 5) e.preventDefault();
+  });
+}());
 
 // ============================================
 // SMOOTH ANCHOR SCROLLING
