@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מדיניות פרטיות — Qualia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,100;1,9..144,300&family=DM+Sans:wght@300;400;500&family=Noto+Serif+Hebrew:wght@300;600;900&family=Noto+Sans+Hebrew:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="header-footer.js" defer></script>
+<style>
+
+/* ============================================
+   RESET + ROOT
+   ============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange:         #E8863A;
+  --orange-glow:    rgba(232, 134, 58, 0.18);
+  --orange-soft:    rgba(232, 134, 58, 0.07);
+  --parchment:      #FAF6F1;
+  --parchment-deep: #F3EDE4;
+  --warm-cream:     #FFF8F0;
+  --sand:           #E7DDD3;
+  --warm-dark:      #1C1917;
+  --warm-brown:     #44403C;
+  --warm-gray:      #6B6460;
+  --warm-light:     #D6CEC6;
+  --orange-text:    #C46820;
+  --font-display:   'Fraunces', 'Noto Serif Hebrew', serif;
+  --font-body:      'DM Sans', 'Noto Sans Hebrew', sans-serif;
+  --toc-width:      260px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--parchment);
+  color: var(--warm-dark);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: default;
+}
+
+::selection {
+  background: var(--orange);
+  color: white;
+}
+
+/* ============================================
+   GRAIN OVERLAY
+   ============================================ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ============================================
+   CUSTOM CURSOR
+   ============================================ */
+.cursor-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease;
+  mix-blend-mode: exclusion;
+}
+
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+  transform: translate(-15px, -15px);
+  opacity: 0.5;
+}
+
+.cursor-ring.hovering {
+  width: 60px;
+  height: 60px;
+  transform: translate(-25px, -25px);
+  border-color: var(--orange);
+  opacity: 1;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.8rem 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav.scrolled {
+  background: rgba(250, 246, 241, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1rem 3.5rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: var(--warm-dark);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: opacity 0.3s;
+}
+.nav-logo:hover { opacity: 0.7; }
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--warm-dark);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  width: 0;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+  transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta-btn {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+  padding: 0.7rem 1.8rem;
+  background: var(--orange);
+  color: var(--warm-dark) !important;
+  border-radius: 100px;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 2px 12px rgba(232, 134, 58, 0.25);
+}
+.nav-cta-btn::after { display: none !important; }
+.nav-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(232, 134, 58, 0.35);
+}
+
+/* ============================================
+   PAGE HERO — EDITORIAL LEGAL HEADER
+   ============================================ */
+.policy-hero {
+  padding: 10rem 3.5rem 5rem;
+  background: var(--parchment-deep);
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--sand);
+}
+
+/* Decorative warm circle — right side */
+.policy-hero::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: -80px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 134, 58, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Thin ruled line — editorial book feel */
+.policy-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 3.5rem;
+  left: 3.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sand) 20%, var(--sand) 80%, transparent);
+}
+
+.policy-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 3rem;
+}
+
+.policy-type-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--warm-gray);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.policy-type-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  display: inline-block;
+}
+
+.policy-hero-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  line-height: 1.08;
+  color: var(--warm-dark);
+  letter-spacing: -0.03em;
+  margin-bottom: 1.4rem;
+}
+
+.policy-hero-title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--warm-brown);
+}
+
+.policy-hero-lead {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--warm-gray);
+  max-width: 520px;
+}
+
+.policy-hero-meta {
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.policy-meta-label {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--warm-gray);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.policy-meta-date {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--warm-brown);
+}
+
+.policy-meta-version {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+  margin-top: 0.3rem;
+}
+
+/* ============================================
+   LEGAL NOTICE BAR (optional callout)
+   ============================================ */
+.policy-notice {
+  background: var(--orange-soft);
+  border-right: 3px solid var(--orange);
+  padding: 1rem 1.5rem;
+  margin: 0 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0 8px 8px 0;
+}
+
+.policy-notice-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--orange-glow);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.policy-notice-text {
+  font-size: 0.85rem;
+  color: var(--warm-brown);
+  line-height: 1.55;
+}
+
+.policy-notice-text strong {
+  color: var(--warm-dark);
+  font-weight: 500;
+}
+
+/* ============================================
+   MAIN LAYOUT — SIDEBAR + CONTENT
+   ============================================ */
+.policy-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 3.5rem 6rem;
+  display: grid;
+  grid-template-columns: var(--toc-width) 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+/* ============================================
+   TABLE OF CONTENTS SIDEBAR
+   ============================================ */
+.policy-toc {
+  position: sticky;
+  top: 6rem;
+}
+
+.toc-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--warm-gray);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+}
+
+.toc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-right: 1px solid var(--sand);
+}
+
+.toc-item {
+  position: relative;
+}
+
+.toc-link {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--warm-gray);
+  text-decoration: none;
+  padding: 0.55rem 1.2rem 0.55rem 0;
+  border-right: 2px solid transparent;
+  margin-right: -1px;
+  transition: color 0.3s, border-color 0.3s;
+  line-height: 1.45;
+}
+
+.toc-link:hover {
+  color: var(--warm-dark);
+  border-right-color: var(--sand);
+}
+
+.toc-link.active {
+  color: var(--orange-text);
+  border-right-color: var(--orange);
+  font-weight: 500;
+}
+
+.toc-link .toc-num {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--warm-light);
+  margin-left: 0.5rem;
+  font-style: italic;
+  transition: color 0.3s;
+}
+.toc-link.active .toc-num { color: var(--orange); opacity: 0.6; }
+
+.toc-progress {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--sand);
+}
+
+.toc-progress-label {
+  font-size: 0.7rem;
+  color: var(--warm-gray);
+  margin-bottom: 0.6rem;
+}
+
+.toc-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--sand);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.toc-progress-fill {
+  height: 100%;
+  background: var(--orange);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.15s ease;
+}
+
+.toc-other-docs {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--sand);
+}
+
+.toc-other-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--warm-gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.toc-other-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toc-other-links a {
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.3s;
+}
+.toc-other-links a:hover { color: var(--orange); }
+
+.toc-other-links .arrow {
+  font-size: 0.65rem;
+  opacity: 0.5;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.toc-other-links a:hover .arrow {
+  transform: translateX(-3px);
+  opacity: 1;
+}
+
+/* ============================================
+   POLICY CONTENT — TYPOGRAPHY SYSTEM
+   ============================================ */
+.policy-content {
+  min-width: 0; /* Prevent grid blowout */
+}
+
+/* Section: h2 level */
+.policy-section {
+  margin-bottom: 4rem;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.33, 1, 0.68, 1),
+              transform 0.7s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.policy-section.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .policy-section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .policy-hero-inner { animation: none !important; opacity: 1 !important; }
+  .policy-section, .policy-contact-block { opacity: 1 !important; transform: none !important; }
+  .toc-progress-fill { transition: none !important; }
+}
+
+.policy-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--sand);
+}
+
+.policy-section-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--warm-light);
+  flex-shrink: 0;
+  min-width: 2rem;
+}
+
+.policy-h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+  line-height: 1.25;
+  color: var(--warm-dark);
+  letter-spacing: -0.02em;
+}
+
+/* Subsection: h3 level */
+.policy-h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--warm-brown);
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.policy-h3::before {
+  content: '';
+  width: 16px;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Body paragraphs */
+.policy-p {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: var(--warm-brown);
+  margin-bottom: 1.2rem;
+}
+
+.policy-p:last-child { margin-bottom: 0; }
+
+/* Emphasis within body */
+.policy-p strong {
+  color: var(--warm-dark);
+  font-weight: 500;
+}
+
+/* Lists */
+.policy-list {
+  list-style: none;
+  margin: 1rem 0 1.2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.policy-list li {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  color: var(--warm-brown);
+  padding-right: 1.4rem;
+  position: relative;
+}
+
+.policy-list li::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0.7em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orange);
+  opacity: 0.7;
+}
+
+/* Ordered list variation */
+.policy-list.numbered {
+  counter-reset: legal-counter;
+}
+
+.policy-list.numbered li {
+  counter-increment: legal-counter;
+  padding-right: 2rem;
+}
+
+.policy-list.numbered li::before {
+  content: counter(legal-counter) '.';
+  background: none;
+  border-radius: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+  width: auto;
+  height: auto;
+  top: auto;
+  line-height: 1.75;
+}
+
+/* Info box — highlighted callout */
+.policy-callout {
+  background: var(--parchment-deep);
+  border: 1px solid var(--sand);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.policy-callout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--orange);
+  border-radius: 0 12px 12px 0;
+}
+
+.policy-callout-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--warm-dark);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.policy-callout-body {
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: var(--warm-brown);
+}
+
+/* Data table — e.g. cookies table */
+.policy-table-wrap {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border-radius: 12px;
+  border: 1px solid var(--sand);
+}
+
+.policy-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+  min-width: 480px;
+}
+
+.policy-table th {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  background: var(--parchment-deep);
+  padding: 0.9rem 1.2rem;
+  text-align: right;
+  border-bottom: 1px solid var(--sand);
+}
+
+.policy-table td {
+  padding: 0.9rem 1.2rem;
+  color: var(--warm-brown);
+  line-height: 1.55;
+  border-bottom: 1px solid rgba(231, 221, 211, 0.5);
+  vertical-align: top;
+}
+
+.policy-table tr:last-child td {
+  border-bottom: none;
+}
+
+.policy-table tr:hover td {
+  background: rgba(250, 246, 241, 0.6);
+}
+
+/* Divider between sections */
+.policy-divider {
+  width: 60px;
+  height: 2px;
+  background: var(--sand);
+  margin: 3rem 0;
+  border-radius: 1px;
+}
+
+/* Contact block at end */
+.policy-contact-block {
+  background: var(--warm-dark);
+  border-radius: 20px;
+  padding: 3rem;
+  margin-top: 4rem;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.33, 1, 0.68, 1),
+              transform 0.7s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.policy-contact-block.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .policy-contact-block {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+.policy-contact-block::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: -80px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 134, 58, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.policy-contact-tag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--orange);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.policy-contact-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: white;
+  line-height: 1.3;
+  margin-bottom: 0.8rem;
+}
+
+.policy-contact-body {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  max-width: 420px;
+}
+
+.policy-contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.policy-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.policy-contact-key {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.08em;
+  min-width: 70px;
+}
+
+.policy-contact-val {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.policy-contact-val:hover { color: var(--orange); }
+
+/* ============================================
+   JUMP LINKS (mobile top-of-page TOC)
+   ============================================ */
+.policy-jump-links {
+  display: none;
+  padding: 0 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.jump-links-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--warm-gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.jump-links-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.jump-links-list a {
+  font-size: 0.78rem;
+  color: var(--warm-brown);
+  background: var(--parchment-deep);
+  border: 1px solid var(--sand);
+  padding: 0.4rem 0.9rem;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.jump-links-list a:hover {
+  background: var(--orange);
+  color: white;
+  border-color: var(--orange);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  background: var(--warm-dark);
+  padding: 4rem;
+  border-radius: 28px 28px 0 0;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 2rem;
+}
+
+.footer-brand-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.footer-brand-desc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+.footer-col-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.05em;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-col a {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.footer-col a:hover { color: var(--orange); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.2);
+}
+
+.footer-social { display: flex; gap: 1rem; }
+.footer-social a {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+.footer-social a:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(232,134,58,0.1);
+}
+
+/* ============================================
+   ANIMATIONS — KEYFRAMES
+   ============================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.policy-hero-inner {
+  animation: fadeInUp 0.9s cubic-bezier(0.33, 1, 0.68, 1) 0.2s both;
+}
+
+/* ============================================
+   RESPONSIVE — 1024px
+   ============================================ */
+@media (max-width: 1024px) {
+  .nav { padding: 1.5rem 2rem; }
+  .nav.scrolled { padding: 0.9rem 2rem; }
+
+  .policy-hero { padding: 9rem 2rem 4rem; }
+  .policy-hero-inner { grid-template-columns: 1fr; gap: 1.5rem; }
+  .policy-hero-meta { text-align: right; }
+
+  .policy-notice { margin: 0 2rem; }
+
+  .policy-layout {
+    padding: 3rem 2rem 5rem;
+    grid-template-columns: 220px 1fr;
+    gap: 3rem;
+  }
+
+  .footer { padding: 3rem 2rem; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+}
+
+/* ============================================
+   RESPONSIVE — 640px (mobile)
+   ============================================ */
+@media (max-width: 640px) {
+  .nav { padding: 1.2rem 1.5rem; }
+  .nav.scrolled { padding: 0.8rem 1.5rem; }
+  .nav-links { display: none; }
+
+  .policy-hero { padding: 7.5rem 1.5rem 3rem; }
+  .policy-hero-inner { grid-template-columns: 1fr; gap: 1rem; }
+  .policy-hero-title { font-size: 2.2rem; }
+  .policy-hero-meta { text-align: right; }
+  .policy-meta-date { font-size: 0.95rem; }
+
+  .policy-notice { margin: 0 1.5rem; }
+
+  /* Hide sidebar on mobile, show jump links instead */
+  .policy-toc { display: none; }
+  .policy-jump-links { display: block; }
+
+  .policy-layout {
+    padding: 0 1.5rem 4rem;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .policy-content { margin-top: 2rem; }
+
+  .policy-h2 { font-size: 1.25rem; }
+
+  .policy-contact-block { padding: 2rem 1.5rem; }
+
+  .footer { padding: 2.5rem 1.5rem; border-radius: 20px 20px 0 0; }
+  .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ============================================
+     NAVIGATION
+     ============================================ -->
+<div id="site-header"></div>
+
+<!-- ============================================
+     PAGE HERO
+     ============================================ -->
+<header class="policy-hero" id="main-content">
+  <div class="policy-hero-inner">
+    <div class="policy-hero-text">
+      <div class="policy-type-tag">
+        <span class="policy-type-tag-dot"></span>
+        מסמכים משפטיים
+      </div>
+      <h1 class="policy-hero-title">
+        מדיניות<br><em>פרטיות</em>
+      </h1>
+      <p class="policy-hero-lead">
+        אנחנו לוקחים את הפרטיות שלכם ברצינות.
+        מסמך זה מסביר בשפה פשוטה ובהירה
+        אילו מידע אנחנו אוספים, למה, ואיך אנחנו מגינים עליו.
+      </p>
+    </div>
+    <div class="policy-hero-meta">
+      <div class="policy-meta-label">עודכן לאחרונה</div>
+      <div class="policy-meta-date">מרץ 2025</div>
+      <div class="policy-meta-version">גרסה 3.1</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================
+     LEGAL NOTICE BAR
+     ============================================ -->
+<div class="policy-notice">
+  <div class="policy-notice-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="M3 9l9-7 9 7"/><path d="M4 14l-1 4h6l-1-4"/><path d="M16 14l-1 4h6l-1-4"/><line x1="2" y1="22" x2="22" y2="22"/><path d="M4 14a6 6 0 0 0 6 0"/><path d="M14 14a6 6 0 0 0 6 0"/></svg></div>
+  <div class="policy-notice-text">
+    <strong>חשוב לדעת:</strong>
+    שימוש בשירותי <span lang="en">Qualia</span> מהווה הסכמה למדיניות פרטיות זו.
+    אם יש לכם שאלות, אנחנו כאן — <a href="mailto:privacy@qualia.co.il" style="color:var(--orange);text-decoration:none;">privacy@qualia.co.il</a>
+  </div>
+</div>
+
+<!-- ============================================
+     MOBILE JUMP LINKS (hidden on desktop)
+     ============================================ -->
+<div class="policy-jump-links">
+  <div class="jump-links-label">דלגו לסעיף</div>
+  <ul class="jump-links-list">
+    <li><a href="#section-1">מידע שנאסף</a></li>
+    <li><a href="#section-2">שימוש במידע</a></li>
+    <li><a href="#section-3">קובצי עוגייה</a></li>
+    <li><a href="#section-4">שיתוף מידע</a></li>
+    <li><a href="#section-5">אבטחת מידע</a></li>
+    <li><a href="#section-6">הזכויות שלכם</a></li>
+    <li><a href="#section-7">יצירת קשר</a></li>
+  </ul>
+</div>
+
+<!-- ============================================
+     MAIN LAYOUT: SIDEBAR + CONTENT
+     ============================================ -->
+<div class="policy-layout">
+
+  <!-- TABLE OF CONTENTS SIDEBAR -->
+  <aside class="policy-toc" aria-label="תוכן עניינים">
+    <div class="toc-label">תוכן עניינים</div>
+    <ul class="toc-list" id="tocList">
+      <li class="toc-item">
+        <a href="#section-1" class="toc-link active">
+          מידע שאנחנו אוספים
+          <span class="toc-num">01</span>
+        </a>
+      </li>
+      <li class="toc-item">
+        <a href="#section-2" class="toc-link">
+          כיצד אנחנו משתמשים במידע
+          <span class="toc-num">02</span>
+        </a>
+      </li>
+      <li class="toc-item">
+        <a href="#section-3" class="toc-link">
+          קובצי עוגייה ומעקב
+          <span class="toc-num">03</span>
+        </a>
+      </li>
+      <li class="toc-item">
+        <a href="#section-4" class="toc-link">
+          שיתוף מידע עם צדדים שלישיים
+          <span class="toc-num">04</span>
+        </a>
+      </li>
+      <li class="toc-item">
+        <a href="#section-5" class="toc-link">
+          אבטחת מידע
+          <span class="toc-num">05</span>
+        </a>
+      </li>
+      <li class="toc-item">
+        <a href="#section-6" class="toc-link">
+          הזכויות שלכם
+          <span class="toc-num">06</span>
+        </a>
+      </li>
+      <li class="toc-item">
+        <a href="#section-7" class="toc-link">
+          יצירת קשר
+          <span class="toc-num">07</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Reading progress -->
+    <div class="toc-progress">
+      <div class="toc-progress-label">התקדמות קריאה</div>
+      <div class="toc-progress-bar">
+        <div class="toc-progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- Other legal docs -->
+    <div class="toc-other-docs">
+      <div class="toc-other-label">מסמכים נוספים</div>
+      <ul class="toc-other-links">
+        <li>
+          <a href="#">
+            <span class="arrow">←</span>
+            תנאי שימוש
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span class="arrow">←</span>
+            הצהרת נגישות
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span class="arrow">←</span>
+            מדיניות עוגיות
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- POLICY CONTENT -->
+  <main class="policy-content">
+
+    <!-- Section 1 -->
+    <section class="policy-section" id="section-1" data-reveal aria-labelledby="policy-heading-1">
+      <div class="policy-section-header">
+        <span class="policy-section-num" aria-hidden="true">01</span>
+        <h2 class="policy-h2" id="policy-heading-1">מידע שאנחנו אוספים</h2>
+      </div>
+
+      <p class="policy-p">
+        כדי לספק לכם את השירות הטוב ביותר, אנחנו אוספים מספר סוגי
+        מידע. חלקו מועבר אלינו ישירות על ידכם, חלקו נאסף באופן
+        אוטומטי בעת השימוש בשירות.
+      </p>
+
+      <h3 class="policy-h3">מידע שאתם מוסרים לנו</h3>
+      <ul class="policy-list">
+        <li>פרטי זיהוי: שם, כתובת דוא"ל, מספר טלפון</li>
+        <li>פרטי חשבון: שם משתמש, סיסמה (מוצפנת), הגדרות חשבון</li>
+        <li>פרטי תשלום: מועברים ישירות לחברת סליקה — אנחנו לא שומרים פרטי כרטיס אשראי</li>
+        <li>פניות ותמיכה: תוכן פניות ששלחתם לצוות השירות שלנו</li>
+      </ul>
+
+      <h3 class="policy-h3">מידע שנאסף אוטומטית</h3>
+      <ul class="policy-list">
+        <li>נתוני שימוש: עמודים שביקרתם, פעולות שביצעתם, תאריך ושעה</li>
+        <li>נתוני מכשיר: סוג דפדפן, מערכת הפעלה, כתובת IP</li>
+        <li>נתוני ביצועים: זמני טעינה, שגיאות, נתוני אבחון</li>
+      </ul>
+
+      <div class="policy-callout">
+        <div class="policy-callout-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;flex-shrink:0;"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.4 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> מינימליזם של מידע
+        </div>
+        <div class="policy-callout-body">
+          אנחנו עוסקים במדיניות "איסוף מינימלי" — אוספים רק את המידע
+          שנחוץ לאספקת השירות. לא אוספים מידע רגיש כגון נתוני בריאות,
+          דעות פוליטיות, או אמונות דתיות.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="policy-section" id="section-2" data-reveal aria-labelledby="policy-heading-2">
+      <div class="policy-section-header">
+        <span class="policy-section-num" aria-hidden="true">02</span>
+        <h2 class="policy-h2" id="policy-heading-2">כיצד אנחנו משתמשים במידע</h2>
+      </div>
+
+      <p class="policy-p">
+        המידע שנאסף משמש אותנו אך ורק לצרכים המפורטים להלן.
+        לא נמכור, נשכיר, או נשתף את המידע שלכם עם גורמים שלישיים
+        לצרכי פרסום.
+      </p>
+
+      <h3 class="policy-h3">מטרות השימוש העיקריות</h3>
+      <ul class="policy-list numbered">
+        <li>הפעלת השירות ואספקת הפונקציונליות המבוקשת</li>
+        <li>עיבוד תשלומים וניהול חשבונות</li>
+        <li>שליחת התראות שירות, חשבוניות ועדכונים חיוניים</li>
+        <li>מתן תמיכה טכנית ומענה לפניות</li>
+        <li>שיפור וייעול המוצר על בסיס נתוני שימוש אנונימיים</li>
+        <li>עמידה בדרישות רגולטוריות חוקיות</li>
+      </ul>
+
+      <h3 class="policy-h3">תקשורת שיווקית</h3>
+      <p class="policy-p">
+        נשלח לכם תוכן שיווקי <strong>רק אם הסכמתם לכך במפורש</strong>
+        בעת ההרשמה. אתם יכולים לבטל את ההסכמה בכל עת דרך הגדרות החשבון
+        שלכם, או בלחיצה על הקישור לביטול הרשמה בתחתית כל הודעת דוא"ל.
+      </p>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="policy-section" id="section-3" data-reveal aria-labelledby="policy-heading-3">
+      <div class="policy-section-header">
+        <span class="policy-section-num" aria-hidden="true">03</span>
+        <h2 class="policy-h2" id="policy-heading-3">קובצי עוגייה ומעקב</h2>
+      </div>
+
+      <p class="policy-p">
+        אנחנו משתמשים בקובצי עוגייה (Cookies) ובטכנולוגיות דומות
+        כדי לשפר את חוויית השימוש ולהבין כיצד אתם משתמשים בשירות.
+      </p>
+
+      <div class="policy-table-wrap">
+        <table class="policy-table">
+          <thead>
+            <tr>
+              <th>סוג עוגייה</th>
+              <th>מטרה</th>
+              <th>תקופת שמירה</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>הכרחיות</strong></td>
+              <td>הפעלת פונקציות בסיסיות: כניסה לחשבון, אבטחה</td>
+              <td>משך הסשן</td>
+            </tr>
+            <tr>
+              <td><strong>העדפות</strong></td>
+              <td>שמירת הגדרות שפה, ממשק, ואזור</td>
+              <td>שנה</td>
+            </tr>
+            <tr>
+              <td><strong>אנליטיקה</strong></td>
+              <td>Google Analytics — נתוני שימוש אנונימיים</td>
+              <td>13 חודשים</td>
+            </tr>
+            <tr>
+              <td><strong>שיווק</strong></td>
+              <td>רימרקטינג — רק בהסכמה מפורשת</td>
+              <td>90 יום</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="policy-p">
+        תוכלו לנהל את הגדרות העוגיות דרך הדפדפן שלכם, או דרך
+        לחצן ניהול ההסכמות שמופיע בפינת המסך. שימו לב: חסימת עוגיות
+        הכרחיות עלולה לפגוע בתפקוד השירות.
+      </p>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="policy-section" id="section-4" data-reveal aria-labelledby="policy-heading-4">
+      <div class="policy-section-header">
+        <span class="policy-section-num" aria-hidden="true">04</span>
+        <h2 class="policy-h2" id="policy-heading-4">שיתוף מידע עם צדדים שלישיים</h2>
+      </div>
+
+      <p class="policy-p">
+        הפרטיות שלכם חשובה לנו. <strong>אנחנו לא מוכרים את המידע שלכם</strong>.
+        שיתוף מידע מתרחש רק במקרים הבאים:
+      </p>
+
+      <h3 class="policy-h3">ספקי שירות</h3>
+      <p class="policy-p">
+        אנחנו עובדים עם ספקי שירות חיצוניים שמסייעים בהפעלת התשתית
+        שלנו: שרתי ענן (AWS), עיבוד תשלומים (Stripe), שירות תמיכה
+        ושליחת הודעות. כולם מחויבים לאמנת עיבוד נתונים (DPA) ואינם
+        רשאים להשתמש במידע למטרות אחרות.
+      </p>
+
+      <h3 class="policy-h3">דרישות חוקיות</h3>
+      <p class="policy-p">
+        נגלה מידע אם נדרש על פי חוק, צו שיפוטי, או בקשה רגולטורית
+        לגיטימית. נעשה כל מאמץ להודיע לכם מראש כשהדבר מותר חוקית.
+      </p>
+
+      <div class="policy-callout">
+        <div class="policy-callout-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> העברה לחו"ל
+        </div>
+        <div class="policy-callout-body">
+          חלק מספקי השירות שלנו פועלים מחוץ לישראל, כולל ממדינות
+          בגוש ה-EEA. בכל מקרה של העברת מידע, אנחנו מוודאים שרמת
+          ההגנה עומדת בדרישות חוק הגנת הפרטיות הישראלי ותקנות ה-GDPR.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5 -->
+    <section class="policy-section" id="section-5" data-reveal aria-labelledby="policy-heading-5">
+      <div class="policy-section-header">
+        <span class="policy-section-num" aria-hidden="true">05</span>
+        <h2 class="policy-h2" id="policy-heading-5">אבטחת מידע</h2>
+      </div>
+
+      <p class="policy-p">
+        אנחנו נוקטים באמצעי אבטחה טכניים וארגוניים כדי להגן על
+        המידע שלכם מפני גישה בלתי מורשית, שינוי, חשיפה, או השמדה.
+      </p>
+
+      <ul class="policy-list">
+        <li>הצפנת HTTPS על כל תעבורת המידע בין הדפדפן לשרתים שלנו</li>
+        <li>הצפנת מידע רגיש במנוחה (at rest) באמצעות AES-256</li>
+        <li>סיסמאות מאוחסנות כ-hash חד-כיווני — אנחנו לא יכולים לראות את הסיסמה שלכם</li>
+        <li>בקרת גישה מבוססת תפקידים (RBAC) בתוך הארגון</li>
+        <li>סקירות אבטחה ובדיקות חדירה תקופתיות</li>
+      </ul>
+
+      <h3 class="policy-h3">במקרה של אירוע אבטחה</h3>
+      <p class="policy-p">
+        אם יתגלה אירוע אבטחה שעלול לפגוע במידע שלכם, נודיע לכם
+        ולרשות להגנת הפרטיות תוך 72 שעות, בהתאם לדרישות החוק.
+        ההתראה תכלול תיאור האירוע, הנתונים שנחשפו, וצעדים שנוקטים.
+      </p>
+    </section>
+
+    <!-- Section 6 -->
+    <section class="policy-section" id="section-6" data-reveal aria-labelledby="policy-heading-6">
+      <div class="policy-section-header">
+        <span class="policy-section-num" aria-hidden="true">06</span>
+        <h2 class="policy-h2" id="policy-heading-6">הזכויות שלכם</h2>
+      </div>
+
+      <p class="policy-p">
+        מכוח חוק הגנת הפרטיות הישראלי ותקנות ה-GDPR, יש לכם
+        זכויות חשובות לגבי המידע האישי שלכם:
+      </p>
+
+      <h3 class="policy-h3">רשימת הזכויות</h3>
+      <ul class="policy-list">
+        <li><strong>זכות גישה:</strong> לקבל עותק של המידע שמוחזק אצלנו</li>
+        <li><strong>זכות תיקון:</strong> לתקן מידע שגוי או לא מדויק</li>
+        <li><strong>זכות מחיקה:</strong> לדרוש מחיקת המידע שלכם ("הזכות להישכח")</li>
+        <li><strong>זכות הגבלה:</strong> להגביל את עיבוד המידע במקרים מסוימים</li>
+        <li><strong>זכות ניידות:</strong> לקבל את המידע שלכם בפורמט מובנה וקריא מכונה</li>
+        <li><strong>זכות התנגדות:</strong> להתנגד לעיבוד מידע לצרכי שיווק ישיר</li>
+        <li><strong>שלילת הסכמה:</strong> לבטל הסכמה שנתתם בכל עת</li>
+      </ul>
+
+      <div class="policy-callout">
+        <div class="policy-callout-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg> כיצד לממש את הזכויות שלכם
+        </div>
+        <div class="policy-callout-body">
+          שלחו בקשה לכתובת privacy@qualia.co.il עם הכותרת "בקשת מימוש זכויות".
+          אנחנו מתחייבים לטפל בבקשתכם תוך 30 ימים. זיהוי מינימלי עשוי
+          להידרש כדי לוודא שאנחנו מוסרים מידע לבעליו הנכון.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7 -->
+    <section class="policy-section" id="section-7" data-reveal aria-labelledby="policy-heading-7">
+      <div class="policy-section-header">
+        <span class="policy-section-num" aria-hidden="true">07</span>
+        <h2 class="policy-h2" id="policy-heading-7">יצירת קשר</h2>
+      </div>
+
+      <p class="policy-p">
+        אם יש לכם שאלות, הערות, או בקשות הנוגעות למדיניות פרטיות זו,
+        אנחנו כאן לעזור. האחריות על הגנת הפרטיות בחברתנו מוטלת על
+        ממונה הגנת הנתונים (DPO).
+      </p>
+    </section>
+
+    <!-- Contact block -->
+    <div class="policy-contact-block" data-reveal>
+      <div class="policy-contact-tag">ממונה הגנת הנתונים</div>
+      <h3 class="policy-contact-title">
+        יש לכם שאלה?<br>אנחנו כאן.
+      </h3>
+      <p class="policy-contact-body">
+        נשמח לענות על כל שאלה בנוגע לפרטיות,
+        לסייע במימוש הזכויות שלכם, או לספק מידע נוסף.
+      </p>
+      <div class="policy-contact-details">
+        <div class="policy-contact-row">
+          <span class="policy-contact-key">דוא"ל</span>
+          <a href="mailto:privacy@qualia.co.il" class="policy-contact-val">privacy@qualia.co.il</a>
+        </div>
+        <div class="policy-contact-row">
+          <span class="policy-contact-key">טלפון</span>
+          <a href="tel:+97237000000" class="policy-contact-val" dir="ltr">03-700-0000</a>
+        </div>
+        <div class="policy-contact-row">
+          <span class="policy-contact-key">כתובת</span>
+          <span class="policy-contact-val"><span lang="en">Marketools Ltd</span>, תל אביב</span>
+        </div>
+        <div class="policy-contact-row">
+          <span class="policy-contact-key">שעות</span>
+          <span class="policy-contact-val">ראשון–חמישי, 09:00–18:00</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<div id="site-footer"></div>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+/* ---- CUSTOM CURSOR ---- */
+const cursorDot  = document.getElementById('cursorDot');
+const cursorRing = document.getElementById('cursorRing');
+
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.body.style.cursor = 'none';
+
+  document.addEventListener('mousemove', e => {
+    cursorDot.style.left  = e.clientX - 5 + 'px';
+    cursorDot.style.top   = e.clientY - 5 + 'px';
+    cursorRing.style.left = e.clientX - 20 + 'px';
+    cursorRing.style.top  = e.clientY - 20 + 'px';
+  });
+
+  document.querySelectorAll('a, button, .policy-callout, .policy-table tr').forEach(el => {
+    el.addEventListener('mouseenter', () => cursorRing.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => cursorRing.classList.remove('hovering'));
+  });
+} else {
+  cursorDot.style.display  = 'none';
+  cursorRing.style.display = 'none';
+  document.body.style.cursor = 'auto';
+}
+
+/* ---- NAV SCROLL — lazy lookup so it works with deferred header injection ---- */
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('mainNav');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+/* ---- SCROLL REVEAL (IntersectionObserver) ---- */
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!prefersReducedMotion) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+} else {
+  // Immediately reveal all when motion is reduced
+  document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('revealed'));
+}
+
+/* ---- TOC ACTIVE SECTION + READING PROGRESS ---- */
+(function() {
+  const sections = document.querySelectorAll('.policy-section[id], .policy-contact-block[id]');
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const progressFill = document.getElementById('progressFill');
+
+  // Reading progress
+  function updateProgress() {
+    const scrollTop    = window.scrollY;
+    const docHeight    = document.documentElement.scrollHeight - window.innerHeight;
+    const progress     = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+    if (progressFill) progressFill.style.width = Math.min(progress, 100) + '%';
+  }
+
+  // Active TOC section
+  function updateActiveToc() {
+    let current = null;
+    const offset = 160; // account for sticky nav height
+
+    sections.forEach(section => {
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      if (window.scrollY + offset >= sectionTop) {
+        current = section.id;
+      }
+    });
+
+    tocLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', () => {
+    updateProgress();
+    updateActiveToc();
+  }, { passive: true });
+
+  // Initial call
+  updateProgress();
+  updateActiveToc();
+})();
+
+/* ---- SMOOTH ANCHOR SCROLL ---- */
+document.querySelectorAll('a[href^="#section-"], a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const href = link.getAttribute('href');
+    if (href.length < 2) return;
+    const target = document.querySelector(href);
+    if (!target) return;
+    e.preventDefault();
+    const navHeight = nav.offsetHeight;
+    const top = target.getBoundingClientRect().top + window.scrollY - navHeight - 24;
+    window.scrollTo({ top, behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>

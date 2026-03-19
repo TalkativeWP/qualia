@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qualia — שירות טלפוני</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500&family=Noto+Serif+Hebrew:wght@300;600;900&family=Noto+Sans+Hebrew:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="header-footer.js" defer></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --orange: #E8863A;
+  --orange-glow: rgba(232, 134, 58, 0.2);
+  --orange-soft: rgba(232, 134, 58, 0.08);
+  --parchment: #FAF6F1;
+  --parchment-deep: #F4EDE4;
+  --sand: #E7DDD3;
+  --stone: #C4977A;
+  --warm-dark: #1C1917;
+  --warm-gray: #6B6460;
+  --warm-light: #D6CEC6;
+  --orange-text: #C46820;
+  --blush: #F5E8DE;
+  --font-display: 'Fraunces', 'Noto Serif Hebrew', serif;
+  --font-body: 'DM Sans', 'Noto Sans Hebrew', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--parchment);
+  color: var(--warm-dark);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--orange); color: white; }
+
+/* CUSTOM CURSOR */
+.cursor-dot {
+  width: 10px; height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 10000;
+  mix-blend-mode: exclusion;
+}
+.cursor-ring {
+  width: 40px; height: 40px;
+  border: 1.5px solid var(--orange);
+  border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 10000;
+  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+  transform: translate(-15px, -15px);
+  opacity: 0.5;
+}
+.cursor-ring.hovering { width: 60px; height: 60px; transform: translate(-25px, -25px); opacity: 1; }
+
+/* NAV */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.8rem 3.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(250,246,241,0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  transition: all 0.5s cubic-bezier(0.33,1,0.68,1);
+}
+.nav.scrolled { padding: 1rem 3.5rem; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+.nav-logo { font-family: var(--font-display); font-weight: 900; font-size: 1.6rem; color: var(--warm-dark); text-decoration: none; }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+.nav-links a { font-size: 0.85rem; font-weight: 400; color: var(--warm-dark); text-decoration: none; position: relative; transition: color 0.3s; }
+.nav-links a::after { content: ''; position: absolute; bottom: -4px; right: 0; width: 0; height: 2px; background: var(--orange); transition: width 0.4s cubic-bezier(0.33,1,0.68,1); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta-btn { font-weight: 500 !important; padding: 0.7rem 1.8rem; background: var(--orange); color: var(--warm-dark) !important; border-radius: 100px; box-shadow: 0 2px 12px rgba(232,134,58,0.25); transition: all 0.4s cubic-bezier(0.33,1,0.68,1); }
+.nav-cta-btn::after { display: none !important; }
+.nav-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232,134,58,0.35); }
+
+.section-tag { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; font-weight: 500; color: var(--orange-text); letter-spacing: 0.08em; margin-bottom: 1.5rem; }
+.section-tag-dot { width: 7px; height: 7px; background: var(--orange); border-radius: 50%; }
+
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.05); opacity: 0.6; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* ============================================
+   SERVICE HERO — Warm, human, editorial
+   ============================================ */
+.service-hero {
+  padding: 10rem 4rem 5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.service-hero-text {
+  opacity: 0; transform: translateY(30px);
+  animation: fadeUp 1s cubic-bezier(0.33,1,0.68,1) 0.3s forwards;
+}
+
+.breadcrumb {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.8rem; color: var(--warm-gray);
+  margin-bottom: 1.5rem;
+}
+.breadcrumb a { color: var(--warm-gray); text-decoration: none; transition: color 0.3s; }
+.breadcrumb a:hover { color: var(--orange); }
+.breadcrumb-sep { color: var(--warm-light); }
+
+.service-hero-icon {
+  width: 64px; height: 64px;
+  background: var(--orange-soft);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+/* Subtle pulse on the hero icon to suggest "live" */
+.service-hero-icon::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 21px;
+  border: 2px solid var(--orange);
+  opacity: 0;
+  animation: pulse-ring 2.5s cubic-bezier(0.22,1,0.36,1) 1.5s infinite;
+}
+
+.service-hero-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.15;
+  margin-bottom: 1.2rem;
+}
+.service-hero-heading em { font-style: italic; font-weight: 600; color: var(--orange); }
+
+.service-hero-lead {
+  font-size: 1.1rem; font-weight: 300;
+  line-height: 1.9; color: var(--warm-gray);
+  margin-bottom: 2rem; max-width: 450px;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 1.2rem;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
+  padding: 1rem 2.2rem; background: var(--orange); color: var(--warm-dark);
+  border: none; border-radius: 100px; cursor: pointer; text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33,1,0.68,1);
+  box-shadow: 0 4px 20px rgba(232,134,58,0.25);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,134,58,0.35); }
+
+.btn-ghost {
+  font-size: 0.85rem; font-weight: 400; color: var(--warm-gray);
+  text-decoration: none; transition: color 0.3s;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.btn-ghost:hover { color: var(--orange); }
+
+.service-hero-visual {
+  opacity: 0; transform: translateY(30px);
+  animation: fadeUp 1s cubic-bezier(0.33,1,0.68,1) 0.5s forwards;
+}
+
+/* The hero visual is a soft "receptionist desk" illustration built from CSS */
+.hero-portrait-wrap {
+  border-radius: 24px;
+  overflow: hidden;
+  aspect-ratio: 5/4;
+  box-shadow: 0 24px 64px rgba(28,25,23,0.1);
+  position: relative;
+  background: linear-gradient(145deg, #E8D5C4 0%, #D4B99A 50%, #C4977A 100%);
+}
+
+/* Decorative warm texture */
+.hero-portrait-wrap::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(232,134,58,0.15) 0%, transparent 50%);
+}
+
+/* Large italic quote inside the portrait */
+.hero-portrait-quote {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 2.5rem;
+  text-align: center;
+}
+.hero-portrait-quote-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  color: rgba(28,25,23,0.78);
+  line-height: 1.5;
+  max-width: 320px;
+  text-shadow: 0 1px 6px rgba(250,246,241,0.5);
+}
+.hero-portrait-quote-text strong {
+  font-weight: 600;
+  color: var(--warm-dark);
+  font-style: normal;
+}
+
+/* Avatar circles decoration */
+.hero-avatars {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(200,160,120,0.6), transparent);
+  display: flex; align-items: flex-end; justify-content: flex-start;
+  padding: 0 1.5rem 1rem;
+  gap: 0.4rem;
+}
+.hero-avatar-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(4px);
+}
+
+/* Floating stat card */
+.hero-float {
+  position: absolute;
+  bottom: -1.5rem; left: -1.5rem;
+  background: white; padding: 1.2rem 1.8rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(28,25,23,0.1);
+  display: flex; align-items: center; gap: 1rem;
+  z-index: 2;
+}
+.hero-float-num { font-family: var(--font-display); font-weight: 900; font-size: 1.8rem; color: var(--warm-dark); line-height: 1; }
+.hero-float-num span { color: var(--orange-text); }
+.hero-float-label { font-size: 0.75rem; color: var(--warm-gray); line-height: 1.4; max-width: 80px; }
+
+/* Live status pill */
+.hero-live-badge {
+  position: absolute;
+  top: 1.2rem; right: 1.2rem;
+  background: white;
+  padding: 0.45rem 0.9rem;
+  border-radius: 100px;
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.875rem; font-weight: 500; color: var(--warm-dark);
+  box-shadow: 0 4px 16px rgba(28,25,23,0.08);
+  z-index: 2;
+}
+.live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #4CAF50;
+  position: relative;
+  flex-shrink: 0;
+}
+.live-dot::after {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  border: 2px solid #4CAF50;
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+/* ============================================
+   WHAT WE ACTUALLY DO — Warm explainer strip
+   ============================================ */
+.explainer-strip {
+  background: var(--parchment-deep);
+  padding: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+.explainer-strip::before {
+  content: '"';
+  font-family: var(--font-display);
+  font-size: 20rem;
+  font-weight: 900;
+  color: rgba(232,134,58,0.06);
+  position: absolute;
+  top: -4rem; right: 2rem;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.explainer-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 5rem;
+  align-items: center;
+  position: relative; z-index: 1;
+}
+.explainer-label {
+  font-size: 0.75rem; font-weight: 500; color: var(--orange-text);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.explainer-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+  line-height: 1.3;
+  color: var(--warm-dark);
+}
+.explainer-heading em { font-style: italic; font-weight: 600; }
+
+.explainer-body {
+  font-size: 1rem; font-weight: 300;
+  line-height: 2;
+  color: var(--warm-gray);
+}
+.explainer-body p + p { margin-top: 1rem; }
+
+/* ============================================
+   PROBLEM → SOLUTION
+   ============================================ */
+.problem-solution {
+  padding: 6rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+
+.problem-card, .solution-card {
+  padding: 3rem;
+  border-radius: 24px;
+  opacity: 0; transform: translateY(30px);
+}
+.problem-card.revealed, .solution-card.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33,1,0.68,1);
+}
+.solution-card.revealed { transition-delay: 0.15s; }
+
+.problem-card {
+  background: var(--warm-dark);
+  color: white;
+}
+.solution-card {
+  background: white;
+  box-shadow: 0 4px 20px rgba(28,25,23,0.05);
+  border: 2px solid var(--orange);
+}
+
+.ps-label {
+  font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.problem-card .ps-label { color: rgba(255,255,255,0.4); }
+.solution-card .ps-label { color: var(--orange); }
+
+.ps-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.ps-list {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 0.8rem;
+}
+.ps-list li {
+  font-size: 0.9rem; line-height: 1.7;
+  display: flex; align-items: flex-start; gap: 0.6rem;
+}
+.problem-card .ps-list li { color: rgba(255,255,255,0.6); }
+.solution-card .ps-list li { color: var(--warm-gray); }
+.ps-icon { flex-shrink: 0; margin-top: 0.2rem; font-size: 0.85rem; }
+
+/* ============================================
+   FEATURES — 6 cards, staggered
+   ============================================ */
+.features {
+  padding: 6rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.features-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0; transform: translateY(20px);
+}
+.features-header.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33,1,0.68,1);
+}
+
+.features-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: 0.5rem;
+}
+.features-sub { font-size: 0.95rem; color: var(--warm-gray); }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2.2rem;
+  box-shadow: 0 2px 12px rgba(28,25,23,0.03);
+  transition: all 0.5s cubic-bezier(0.33,1,0.68,1);
+  opacity: 0; transform: translateY(25px);
+}
+.feature-card.revealed { opacity: 1; transform: translateY(0); }
+.feature-card:nth-child(2).revealed { transition-delay: 0.08s; }
+.feature-card:nth-child(3).revealed { transition-delay: 0.16s; }
+.feature-card:nth-child(4).revealed { transition-delay: 0.08s; }
+.feature-card:nth-child(5).revealed { transition-delay: 0.16s; }
+.feature-card:nth-child(6).revealed { transition-delay: 0.24s; }
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(28,25,23,0.07);
+}
+
+.feature-icon {
+  width: 48px; height: 48px;
+  background: var(--orange-soft);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
+  transition: background 0.3s;
+}
+.feature-card:hover .feature-icon { background: var(--orange-glow); }
+
+.feature-title {
+  font-family: var(--font-display);
+  font-weight: 600; font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.feature-desc {
+  font-size: 0.85rem; line-height: 1.7;
+  color: var(--warm-gray);
+}
+
+/* ============================================
+   HOW IT WORKS — Dark section, 4 steps
+   (Answering service has a distinct "call flow" story)
+   ============================================ */
+.how-it-works {
+  padding: 6rem 4rem;
+  background: var(--warm-dark);
+  color: white;
+}
+
+.how-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  max-width: 600px;
+  margin-left: auto; margin-right: auto;
+}
+.how-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: 0.5rem;
+}
+.how-heading em { font-style: italic; color: var(--orange); }
+.how-sub { font-size: 0.95rem; color: rgba(255,255,255,0.65); }
+
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Connecting line between steps */
+.how-steps::before {
+  content: '';
+  position: absolute;
+  top: 3.8rem;
+  right: 15%;
+  left: 15%;
+  height: 1px;
+  background: linear-gradient(to left, transparent, rgba(232,134,58,0.25) 20%, rgba(232,134,58,0.25) 80%, transparent);
+  pointer-events: none;
+}
+
+.how-step {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  opacity: 0; transform: translateY(30px);
+  position: relative;
+}
+.how-step.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33,1,0.68,1);
+}
+.how-step:nth-child(2).revealed { transition-delay: 0.1s; }
+.how-step:nth-child(3).revealed { transition-delay: 0.2s; }
+.how-step:nth-child(4).revealed { transition-delay: 0.3s; }
+
+.how-step-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 3.5rem;
+  color: var(--orange);
+  opacity: 0.12;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.how-step-icon {
+  width: 56px; height: 56px;
+  background: rgba(232,134,58,0.1);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1.2rem;
+}
+.how-step-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+.how-step-desc {
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.65);
+  max-width: 220px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   MEET YOUR TEAM — The human angle
+   (Unique section: introduces the operators concept)
+   ============================================ */
+.meet-team {
+  padding: 6rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.meet-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0; transform: translateY(20px);
+}
+.meet-header.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33,1,0.68,1);
+}
+.meet-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: 0.5rem;
+}
+.meet-heading em { font-style: italic; font-weight: 600; color: var(--orange-text); }
+.meet-sub { font-size: 0.95rem; color: var(--warm-gray); }
+
+/* Warm operator profile cards */
+.operator-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.operator-card {
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(28,25,23,0.03);
+  transition: all 0.5s cubic-bezier(0.33,1,0.68,1);
+  opacity: 0; transform: translateY(25px);
+}
+.operator-card.revealed { opacity: 1; transform: translateY(0); }
+.operator-card:nth-child(2).revealed { transition-delay: 0.1s; }
+.operator-card:nth-child(3).revealed { transition-delay: 0.2s; }
+
+.operator-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(28,25,23,0.07);
+}
+
+/* Portrait area — CSS-painted warm abstract portrait */
+.operator-portrait {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+.operator-portrait-bg {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.operator-portrait-shape {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.8rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.operator-card:nth-child(1) .operator-portrait { background: linear-gradient(135deg, #F0E4D8, #E8D0BC); }
+.operator-card:nth-child(2) .operator-portrait { background: linear-gradient(135deg, #E8E0D8, #D8C9BA); }
+.operator-card:nth-child(3) .operator-portrait { background: linear-gradient(135deg, #F4EAE0, #EAD5C2); }
+
+.operator-card:nth-child(1) .operator-portrait-shape { background: rgba(255,255,255,0.7); }
+.operator-card:nth-child(2) .operator-portrait-shape { background: rgba(255,255,255,0.7); }
+.operator-card:nth-child(3) .operator-portrait-shape { background: rgba(255,255,255,0.7); }
+
+/* Availability badge inside portrait */
+.operator-status {
+  position: absolute;
+  bottom: 0.8rem; right: 0.8rem;
+  background: white;
+  padding: 0.3rem 0.7rem;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--warm-dark);
+  display: flex; align-items: center; gap: 0.35rem;
+  box-shadow: 0 2px 8px rgba(28,25,23,0.08);
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.online { background: #4CAF50; }
+.status-dot.standby { background: var(--orange); }
+
+.operator-body { padding: 1.8rem 2rem 2rem; }
+.operator-name {
+  font-family: var(--font-display);
+  font-weight: 600; font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+.operator-title {
+  font-size: 0.78rem; color: var(--orange-text); font-weight: 500;
+  margin-bottom: 1rem;
+}
+.operator-quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--warm-gray);
+  line-height: 1.6;
+  padding-right: 1rem;
+  border-right: 2px solid var(--sand);
+  margin-bottom: 1.2rem;
+}
+.operator-skills {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+}
+.operator-skill-tag {
+  font-size: 0.7rem; font-weight: 400;
+  padding: 0.3rem 0.7rem;
+  background: var(--blush);
+  border-radius: 100px;
+  color: var(--warm-gray);
+}
+
+/* ============================================
+   PERSONAS — Who is it for
+   ============================================ */
+.personas {
+  padding: 6rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.personas-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  opacity: 0; transform: translateY(20px);
+}
+.personas-header.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33,1,0.68,1);
+}
+.personas-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: 0.5rem;
+}
+.personas-sub { font-size: 0.95rem; color: var(--warm-gray); }
+
+.personas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.persona-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 2px 12px rgba(28,25,23,0.03);
+  opacity: 0; transform: translateY(25px);
+  transition: all 0.5s cubic-bezier(0.33,1,0.68,1);
+  position: relative; overflow: hidden;
+}
+.persona-card.revealed { opacity: 1; transform: translateY(0); }
+.persona-card:nth-child(2).revealed { transition-delay: 0.1s; }
+.persona-card:nth-child(3).revealed { transition-delay: 0.2s; }
+.persona-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(28,25,23,0.07); }
+
+.persona-emoji { font-size: 2.5rem; margin-bottom: 1rem; }
+.persona-type { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; margin-bottom: 0.3rem; }
+.persona-role { font-size: 0.8rem; color: var(--orange-text); font-weight: 500; margin-bottom: 1rem; }
+.persona-desc { font-size: 0.88rem; line-height: 1.8; color: var(--warm-gray); margin-bottom: 1.2rem; }
+.persona-needs { font-size: 0.78rem; color: var(--warm-dark); font-weight: 500; margin-bottom: 0.5rem; }
+.persona-needs-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+.persona-needs-list li { font-size: 0.8rem; color: var(--warm-gray); padding-right: 1rem; position: relative; }
+.persona-needs-list li::before { content: '→'; position: absolute; right: 0; color: var(--orange-text); font-size: 0.7rem; }
+
+/* ============================================
+   TESTIMONIAL STRIP — Social proof
+   (New section: a single editorial testimonial)
+   ============================================ */
+.testimonial-strip {
+  background: var(--parchment-deep);
+  padding: 5rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+.testimonial-strip::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(232,134,58,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 50%, rgba(196,151,122,0.08) 0%, transparent 60%);
+}
+.testimonial-inner {
+  max-width: 900px; margin: 0 auto;
+  text-align: center;
+  position: relative; z-index: 1;
+  opacity: 0; transform: translateY(25px);
+}
+.testimonial-inner.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33,1,0.68,1);
+}
+.testimonial-mark {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  color: var(--orange);
+  opacity: 0.2;
+  line-height: 0.5;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.testimonial-text {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  line-height: 1.7;
+  color: var(--warm-dark);
+  margin-bottom: 2rem;
+}
+.testimonial-author {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+}
+.testimonial-author-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--sand);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.testimonial-author-info { text-align: right; }
+.testimonial-author-name { font-weight: 500; font-size: 0.9rem; color: var(--warm-dark); }
+.testimonial-author-role { font-size: 0.78rem; color: var(--warm-gray); }
+
+/* ============================================
+   PRICING PHILOSOPHY
+   ============================================ */
+.pricing {
+  margin: 0 4rem;
+  padding: 4rem;
+  background: linear-gradient(135deg, var(--warm-dark) 0%, #2C2420 100%);
+  border-radius: 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.pricing::before {
+  content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,134,58,0.1) 0%, transparent 70%);
+  top: -150px; left: -100px; pointer-events: none;
+}
+
+.pricing-text {
+  position: relative; z-index: 2;
+  opacity: 0; transform: translateY(25px);
+}
+.pricing-text.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33,1,0.68,1);
+}
+.pricing-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  color: white; line-height: 1.3;
+  margin-bottom: 1rem;
+}
+.pricing-heading em { font-style: italic; color: var(--orange); }
+.pricing-body { font-size: 0.95rem; line-height: 1.9; color: rgba(255,255,255,0.65); margin-bottom: 2rem; }
+.pricing-highlights { display: flex; flex-direction: column; gap: 0.8rem; }
+.pricing-highlight { display: flex; align-items: center; gap: 0.8rem; font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+.pricing-highlight-icon { width: 28px; height: 28px; background: rgba(232,134,58,0.15); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--orange); flex-shrink: 0; }
+
+.pricing-cta {
+  position: relative; z-index: 2;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 3rem;
+  text-align: center;
+  opacity: 0; transform: translateY(25px);
+}
+.pricing-cta.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33,1,0.68,1) 0.15s;
+}
+.pricing-cta-title { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; color: white; margin-bottom: 0.5rem; }
+.pricing-cta-sub { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 2rem; line-height: 1.6; }
+.btn-pricing {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-body); font-size: 1rem; font-weight: 500;
+  padding: 1.1rem 2.5rem; background: var(--orange); color: var(--warm-dark);
+  border: none; border-radius: 100px; cursor: pointer; text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33,1,0.68,1);
+  box-shadow: 0 4px 20px rgba(232,134,58,0.3);
+}
+.btn-pricing:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,134,58,0.4); }
+.pricing-note { font-size: 0.75rem; color: rgba(255,255,255,0.25); margin-top: 1rem; }
+
+/* ============================================
+   RELATED SERVICES
+   ============================================ */
+.related {
+  padding: 6rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.related-header { margin-bottom: 2rem; opacity: 0; transform: translateY(15px); }
+.related-header.revealed { opacity: 1; transform: translateY(0); transition: all 0.8s cubic-bezier(0.33,1,0.68,1); }
+.related-heading { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; }
+.related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.related-card {
+  background: white; border-radius: 20px; padding: 2.5rem;
+  display: flex; gap: 1.5rem;
+  box-shadow: 0 2px 12px rgba(28,25,23,0.03);
+  transition: all 0.5s cubic-bezier(0.33,1,0.68,1);
+  text-decoration: none; color: inherit;
+  opacity: 0; transform: translateY(20px);
+}
+.related-card.revealed { opacity: 1; transform: translateY(0); transition: all 0.8s cubic-bezier(0.33,1,0.68,1); }
+.related-card:nth-child(2).revealed { transition-delay: 0.1s; }
+.related-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(28,25,23,0.07); }
+.related-icon { width: 52px; height: 52px; background: var(--orange-soft); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+.related-name { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; margin-bottom: 0.3rem; }
+.related-desc { font-size: 0.85rem; color: var(--warm-gray); line-height: 1.6; margin-bottom: 0.5rem; }
+.related-link { font-size: 0.8rem; font-weight: 500; color: var(--orange-text); display: inline-flex; align-items: center; gap: 0.3rem; }
+
+/* CTA */
+.cta-section { padding: 6rem 4rem; text-align: center; }
+.cta-inner { max-width: 600px; margin: 0 auto; opacity: 0; transform: translateY(25px); }
+.cta-inner.revealed { opacity: 1; transform: translateY(0); transition: all 1s cubic-bezier(0.33,1,0.68,1); }
+.cta-heading { font-family: var(--font-display); font-weight: 300; font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.3; margin-bottom: 1rem; }
+.cta-heading em { font-style: italic; font-weight: 600; color: var(--orange-text); }
+.cta-sub { font-size: 1rem; color: var(--warm-gray); line-height: 1.7; margin-bottom: 2.5rem; }
+
+/* FOOTER */
+.footer { background: var(--warm-dark); padding: 4rem; border-radius: 28px 28px 0 0; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 2rem; }
+.footer-brand-name { font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; color: white; margin-bottom: 1rem; }
+.footer-brand-desc { font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.7; max-width: 300px; }
+.footer-col-title { font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.6); margin-bottom: 1.2rem; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-col a { font-size: 0.85rem; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.3s; }
+.footer-col a:hover { color: var(--orange); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.2); }
+.footer-social { display: flex; gap: 1rem; }
+.footer-social a { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.8rem; transition: all 0.3s ease; }
+.footer-social a:hover { border-color: var(--orange); color: var(--orange); background: rgba(232,134,58,0.1); }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .service-hero { grid-template-columns: 1fr; gap: 3rem; padding: 9rem 2.5rem 4rem; }
+  .explainer-inner { grid-template-columns: 1fr; gap: 2.5rem; padding: 5rem 2.5rem; }
+  .explainer-strip { padding: 4rem 2.5rem; }
+  .problem-solution { grid-template-columns: 1fr; padding: 5rem 2.5rem; }
+  .features { padding: 5rem 2.5rem; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .how-it-works { padding: 5rem 2.5rem; }
+  .how-steps { grid-template-columns: repeat(2, 1fr); }
+  .how-steps::before { display: none; }
+  .meet-team { padding: 5rem 2.5rem; }
+  .operator-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .personas { padding: 5rem 2.5rem; }
+  .personas-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .testimonial-strip { padding: 4rem 2.5rem; }
+  .pricing { grid-template-columns: 1fr; margin: 0 2.5rem; padding: 3rem; }
+  .related { padding: 5rem 2.5rem; }
+  .related-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .nav { padding: 1.2rem 2rem; }
+  .cursor-dot, .cursor-ring { display: none; }
+}
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .service-hero { padding: 8rem 2rem 3rem; }
+  .service-hero-heading { font-size: clamp(2rem, 8vw, 3rem); }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .features-grid { grid-template-columns: 1fr; }
+  .how-steps { grid-template-columns: 1fr; }
+  .footer { padding: 3rem 2rem; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+  .cta-section { padding: 4rem 2rem; }
+  .related { padding: 4rem 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .service-hero-text, .service-hero-visual { opacity: 1 !important; transform: none !important; }
+  .live-dot::after, .service-hero-icon::after { animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<!-- NAV -->
+<div id="site-header"></div>
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section class="service-hero" id="main-content" aria-labelledby="sa-hero-heading">
+  <div class="service-hero-text">
+    <div class="breadcrumb">
+      <a href="index.html"><span lang="en">Qualia</span></a>
+      <span class="breadcrumb-sep">←</span>
+      <a href="services-page-design.html">שירותים</a>
+      <span class="breadcrumb-sep">←</span>
+      <span>שירות טלפוני</span>
+    </div>
+    <div class="service-hero-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+    <h1 class="service-hero-heading" id="sa-hero-heading">
+      המענה שכל עסק<br>
+      <em>חולם עליו.</em>
+    </h1>
+    <p class="service-hero-lead">
+      אנשים אמיתיים עונים לטלפון בשם העסק שלך —
+      בנימוס, במקצועיות, ובדיוק כפי שהיית רוצה לענות בעצמך.
+      כל שיחה. כל יום.
+    </p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn-primary">קבלו הצעה ←</a>
+      <a href="#how" class="btn-ghost">איך זה עובד ↓</a>
+    </div>
+  </div>
+
+  <div class="service-hero-visual">
+    <div class="hero-portrait-wrap">
+
+      <!-- Live badge -->
+      <div class="hero-live-badge">
+        <div class="live-dot"></div>
+        מענה פעיל עכשיו
+      </div>
+
+      <!-- Quote illustration -->
+      <div class="hero-portrait-quote">
+        <p class="hero-portrait-quote-text">
+          "שלום, הגעתם ל<strong>סטודיו כהן</strong>. אני יכולה לעזור?"
+        </p>
+      </div>
+
+      <!-- Avatar row at bottom -->
+      <div class="hero-avatars">
+        <div class="hero-avatar-dot"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#44403C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div class="hero-avatar-dot"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#44403C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div class="hero-avatar-dot"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#44403C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M9 14l1.5 2 1.5-1 1.5 1 1.5-2" stroke-width="1.4"/></svg></div>
+        <div style="font-size: 0.65rem; color: rgba(28,25,23,0.45); align-self: center; margin-right: 0.4rem; font-family: var(--font-body);">+18 נציגים</div>
+      </div>
+
+      <!-- Floating stat -->
+      <div class="hero-float">
+        <div>
+          <div class="hero-float-num">97<span>%</span></div>
+          <div class="hero-float-label">שיחות שנענות תוך 3 צלצולים</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     EXPLAINER STRIP
+     ============================================ -->
+<div class="explainer-strip">
+  <div class="explainer-inner">
+    <div style="opacity:0; transform:translateY(20px);" data-reveal>
+      <div class="explainer-label">מה זה בדיוק</div>
+      <h2 class="explainer-heading">
+        מזכירה שתמיד זמינה,<br>
+        <em>בלי שאי פעם תצטרך לגייס.</em>
+      </h2>
+    </div>
+    <div class="explainer-body" style="opacity:0; transform:translateY(20px);" data-reveal>
+      <p>
+        שירות טלפוני של <span lang="en">Qualia</span> הוא צוות נציגים אנושיים שמקבלים הכשרה על העסק שלכם — ה־tone, השירותים, הנהלים — ועונים לכל שיחה כאילו הם חלק מהצוות שלכם.
+      </p>
+      <p>
+        הם לא בוטים. לא מענה אוטומטי. לא "הקישו 1". הם אנשים אמיתיים שמקשיבים, מסייעים, ומעבירים מסרים — כשאתם עסוקים, בפגישה, או מחוץ לשעות הפעילות.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     PROBLEM → SOLUTION
+     ============================================ -->
+<section class="problem-solution">
+  <div class="problem-card" data-reveal>
+    <div class="ps-label"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> המצב הנוכחי</div>
+    <h3 class="ps-title">שיחות שנופלות — עסקים שמפסידים</h3>
+    <ul class="ps-list">
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>לקוחות שמגיעים לתא קולי ומשפיעים על הרושם הראשוני</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>שיחות שנפסדות כשאתה בפגישה</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>עובד ששוקע בשיחות שגרתיות במקום לייצר ערך</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>אין תיעוד — מי התקשר, מתי, ולמה</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>שיחות אחרי שעות שנופלות לחלל</li>
+    </ul>
+  </div>
+  <div class="solution-card" data-reveal>
+    <div class="ps-label"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> עם <span lang="en">Qualia</span></div>
+    <h3 class="ps-title">כל שיחה מתקבלת. כל הזמן.</h3>
+    <ul class="ps-list">
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>נציג אנושי עונה תמיד — בשם העסק שלך</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>אתה בפגישה? אנחנו מנהלים את הטלפון</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>הצוות שלך מתרכז בעבודה האמיתית</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>כל שיחה מתועדת ומועברת בזמן אמת</li>
+      <li><span class="ps-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>כיסוי מעבר לשעות המשרד — לפי הצורך</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================
+     FEATURES
+     ============================================ -->
+<section class="features" aria-labelledby="sa-features-heading">
+  <div class="features-header" data-reveal>
+    <div class="section-tag" style="justify-content: center;"><span class="section-tag-dot" aria-hidden="true"></span> יכולות</div>
+    <h2 class="features-heading" id="sa-features-heading">יותר מסתם מענה.</h2>
+    <p class="features-sub">נציגים שמכירים את העסק שלך ופועלים כחלק מהצוות</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card" data-reveal>
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+      <h3 class="feature-title">לקיחת הודעות</h3>
+      <p class="feature-desc">כל פרט חשוב — שם, מספר, עניין — מועבר אליך כהודעה ב-SMS, מייל, או WhatsApp מיד בסיום השיחה.</p>
+    </div>
+    <div class="feature-card" data-reveal>
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <h3 class="feature-title">קביעת פגישות</h3>
+      <p class="feature-desc">הנציגים קובעים פגישות ישירות ביומן שלך. לקוח שמגיע לקביעת תור יוצא עם מועד ביד.</p>
+    </div>
+    <div class="feature-card" data-reveal>
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+      <h3 class="feature-title">העברת שיחות</h3>
+      <p class="feature-desc">שיחות דחופות מועברות ישירות אליך, לשותף, או לאיש הנכון — לפי כללים שהגדרת.</p>
+    </div>
+    <div class="feature-card" data-reveal>
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+      <h3 class="feature-title">כיסוי מחוץ לשעות</h3>
+      <p class="feature-desc">הגן על הלידים שלך אחרי 18:00. שיחות שמגיעות מחוץ לשעות נענות, מתועדות, ומחכות לך בבוקר.</p>
+    </div>
+    <div class="feature-card" data-reveal>
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+      <h3 class="feature-title">סקריפט מותאם</h3>
+      <p class="feature-desc">הנציגים עובדים לפי הסקריפט שלך — כולל איך להציג, מה לשאול, ומה לא לגלות.</p>
+    </div>
+    <div class="feature-card" data-reveal>
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <h3 class="feature-title">דוחות שיחות</h3>
+      <p class="feature-desc">סיכום יומי של כל השיחות — מי התקשר, מה הטיב, מה נקבע. נתונים לניהול, לא רק לארכיון.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     HOW IT WORKS — 4 steps (call flow)
+     ============================================ -->
+<section class="how-it-works" id="how" aria-labelledby="sa-how-heading">
+  <div class="how-header">
+    <div class="section-tag" style="justify-content: center; color: rgba(255,255,255,0.4);"><span class="section-tag-dot" aria-hidden="true"></span> התהליך</div>
+    <h2 class="how-heading" id="sa-how-heading">מה קורה כש<em>מישהו מתקשר?</em></h2>
+    <p class="how-sub">ארבעה שניות מהצלצול הראשון ועד לקוח שמרגיש שקיבל שירות אמיתי</p>
+  </div>
+  <div class="how-steps">
+    <div class="how-step" data-reveal>
+      <div class="how-step-num">01</div>
+      <div class="how-step-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.58 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l1.62-1.62a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg></div>
+      <h3 class="how-step-title">הצלצול מגיע</h3>
+      <p class="how-step-desc">שיחה נכנסת מנותבת בצורה חכמה לנציג הפנוי — תוך שניות ספורות, מבלי שהמתקשר ידע שמדובר בשירות חיצוני.</p>
+    </div>
+    <div class="how-step" data-reveal>
+      <div class="how-step-num">02</div>
+      <div class="how-step-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L8 15"/></svg></div>
+      <h3 class="how-step-title">מענה בשמך</h3>
+      <p class="how-step-desc">"שלום, הגעתם ל[שם העסק]." הנציג מכיר את הסקריפט שלך, יודע מה לשאול ואיך לייצג אתכם נכון.</p>
+    </div>
+    <div class="how-step" data-reveal>
+      <div class="how-step-num">03</div>
+      <div class="how-step-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 11h.01"/><path d="M7 11h.01"/><path d="M12 3a9 9 0 1 0 0 18A9 9 0 0 0 12 3z"/><path d="M8.5 16s1-1.5 3.5-1.5 3.5 1.5 3.5 1.5"/></svg></div>
+      <h3 class="how-step-title">טיפול אמיתי</h3>
+      <p class="how-step-desc">לקיחת הודעה, קביעת פגישה, ניתוב לאיש הנכון — כל פעולה שהגדרת מראש, מתבצעת ברגע.</p>
+    </div>
+    <div class="how-step" data-reveal>
+      <div class="how-step-num">04</div>
+      <div class="how-step-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+      <h3 class="how-step-title">עדכון מיידי</h3>
+      <p class="how-step-desc">אתה מקבל סיכום השיחה — שם, מספר, עניין — ב-WhatsApp, SMS, או מייל. תוך דקות מסיום השיחה.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     MEET THE TEAM — Human operators
+     ============================================ -->
+<section class="meet-team" aria-labelledby="sa-team-heading">
+  <div class="meet-header" data-reveal>
+    <div class="section-tag" style="justify-content: center;"><span class="section-tag-dot" aria-hidden="true"></span> הצוות שלך</div>
+    <h2 class="meet-heading" id="sa-team-heading">אנשים שבאמת <em>מכירים אתכם.</em></h2>
+    <p class="meet-sub">הנציגים עוברים הכשרה ייעודית על העסק שלך — לא עובדים מהסקריפט, מבינים את הרוח</p>
+  </div>
+  <div class="operator-grid">
+    <div class="operator-card" data-reveal>
+      <div class="operator-portrait">
+        <div class="operator-portrait-bg">
+          <div class="operator-portrait-shape"><svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#78716C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M15 3l1 2-1 1"/><path d="M17 4l2 1-1 2"/></svg></div>
+        </div>
+        <div class="operator-status">
+          <span class="status-dot online"></span>
+          ב מענה עכשיו
+        </div>
+      </div>
+      <div class="operator-body">
+        <div class="operator-name">מיכל ל.</div>
+        <div class="operator-title">נציגה בכירה — 4 שנים עם <span lang="en">Qualia</span></div>
+        <div class="operator-quote">"כל שיחה היא הרושם הראשוני שלך. אני דואגת שתמיד יהיה חיובי."</div>
+        <div class="operator-skills">
+          <span class="operator-skill-tag">קליניקות</span>
+          <span class="operator-skill-tag">קביעת תורים</span>
+          <span class="operator-skill-tag">עברית/אנגלית</span>
+        </div>
+      </div>
+    </div>
+    <div class="operator-card" data-reveal>
+      <div class="operator-portrait">
+        <div class="operator-portrait-bg">
+          <div class="operator-portrait-shape"><svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#78716C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="9" y1="3" x2="9" y2="6"/><line x1="15" y1="3" x2="15" y2="6"/><line x1="8" y1="4.5" x2="16" y2="4.5"/></svg></div>
+        </div>
+        <div class="operator-status">
+          <span class="status-dot online"></span>
+          ב מענה עכשיו
+        </div>
+      </div>
+      <div class="operator-body">
+        <div class="operator-name">דוד מ.</div>
+        <div class="operator-title">נציג שירות — 2 שנים עם <span lang="en">Qualia</span></div>
+        <div class="operator-quote">"אני מתאמן להכיר כל לקוח לפני שמתחילים. ז'ה לא מתחיל מאפס."</div>
+        <div class="operator-skills">
+          <span class="operator-skill-tag">נדל"ן</span>
+          <span class="operator-skill-tag">שירותים מקצועיים</span>
+          <span class="operator-skill-tag">ניתוב שיחות</span>
+        </div>
+      </div>
+    </div>
+    <div class="operator-card" data-reveal>
+      <div class="operator-portrait">
+        <div class="operator-portrait-bg">
+          <div class="operator-portrait-shape"><svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#78716C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        </div>
+        <div class="operator-status">
+          <span class="status-dot standby"></span>
+          ב המתנה
+        </div>
+      </div>
+      <div class="operator-body">
+        <div class="operator-name">שירה ג.</div>
+        <div class="operator-title">נציגה — 1.5 שנים עם <span lang="en">Qualia</span></div>
+        <div class="operator-quote">"לכל עסק יש את ה-DNA שלו. לקח לי שיחה אחת להבין אותה."</div>
+        <div class="operator-skills">
+          <span class="operator-skill-tag">עסקים קטנים</span>
+          <span class="operator-skill-tag">הודעות WhatsApp</span>
+          <span class="operator-skill-tag">אחרי שעות</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     PERSONAS
+     ============================================ -->
+<section class="personas" aria-labelledby="sa-personas-heading">
+  <div class="personas-header" data-reveal>
+    <div class="section-tag" style="justify-content: center;"><span class="section-tag-dot" aria-hidden="true"></span> למי זה מתאים</div>
+    <h2 class="personas-heading" id="sa-personas-heading">עסקים שלא יכולים להרשות לעצמם לפספס</h2>
+    <p class="personas-sub">מתאים לכל מי שהטלפון הוא חלק מהעסק — לא טרחה</p>
+  </div>
+  <div class="personas-grid">
+    <div class="persona-card" data-reveal>
+      <div class="persona-emoji"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><line x1="12" y1="13" x2="12" y2="17"/><line x1="10" y1="15" x2="14" y2="15"/></svg></div>
+      <h3 class="persona-type">קליניקות ורופאים</h3>
+      <div class="persona-role">קביעת תורים + מענה רגיש</div>
+      <p class="persona-desc">מטופלים מצפים לאדם אמיתי בצד השני, לא לתא קולי. הנציגים שלנו מכירים את פרוטוקול הקליניקה ושומרים על סבלנות מלאה.</p>
+      <div class="persona-needs">מה שחשוב:</div>
+      <ul class="persona-needs-list">
+        <li>קביעת תורים ישירה ביומן</li>
+        <li>מדיניות ביטול/שינוי ברורה</li>
+        <li>רגישות ודיסקרטיות</li>
+      </ul>
+    </div>
+    <div class="persona-card" data-reveal>
+      <div class="persona-emoji"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><polyline points="4 9 12 2 20 9"/><line x1="5" y1="19" x2="19" y2="19"/></svg></div>
+      <h3 class="persona-type">עורכי דין ויועצים</h3>
+      <div class="persona-role">סינון פניות + ייצוגיות</div>
+      <p class="persona-desc">לקוחות פוטנציאליים שופטים אתכם לפי המענה הראשון. הנציגים שלנו יוצרים רושם ראשוני שמכבד את המשרד.</p>
+      <div class="persona-needs">מה שחשוב:</div>
+      <ul class="persona-needs-list">
+        <li>שפה מקצועית ומכובדת</li>
+        <li>סינון ראשוני של הפנייה</li>
+        <li>קביעת שיחת היכרות</li>
+      </ul>
+    </div>
+    <div class="persona-card" data-reveal>
+      <div class="persona-emoji"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <h3 class="persona-type">עצמאיים ועסקים קטנים</h3>
+      <div class="persona-role">נוכחות מקצועית — ללא עלות שכירה</div>
+      <p class="persona-desc">אתה מוכשר בתחום שלך — לא בניהול שיחות נכנסות. הנציגים שלנו מנהלים את הטלפון כדי שתוכל להתרכז בעבודה האמיתית.</p>
+      <div class="persona-needs">מה שחשוב:</div>
+      <ul class="persona-needs-list">
+        <li>הישמע כמו חברה גדולה</li>
+        <li>אפס שיחות שנופלות</li>
+        <li>עלות נמוכה ממזכירה במשרה חלקית</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     TESTIMONIAL
+     ============================================ -->
+<div class="testimonial-strip">
+  <div class="testimonial-inner" data-reveal>
+    <span class="testimonial-mark">"</span>
+    <p class="testimonial-text">
+      השירות של <span lang="en">Qualia</span> הפך להיות חלק מה-DNA של המרפאה. המטופלים מגיעים ואומרים שהמזכירה שלנו הייתה כל כך נחמדה בטלפון — לא יודעים שהיא אפילו לא יושבת אצלנו.
+    </p>
+    <div class="testimonial-author">
+      <div class="testimonial-author-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#78716C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
+      <div class="testimonial-author-info">
+        <div class="testimonial-author-name">ד"ר יואב שמיר</div>
+        <div class="testimonial-author-role">מרפאת שיניים, תל אביב · לקוח <span lang="en">Qualia</span> מ-2021</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     PRICING
+     ============================================ -->
+<section class="pricing" id="pricing" aria-labelledby="sa-pricing-heading">
+  <div class="pricing-text" data-reveal>
+    <div class="section-tag" style="color: rgba(255,255,255,0.4);"><span class="section-tag-dot" aria-hidden="true"></span> תמחור</div>
+    <h2 class="pricing-heading" id="sa-pricing-heading">פחות מעלות שעה של <em>מזכירה.</em></h2>
+    <p class="pricing-body">
+      שירות מזכירות מקצועי עולה הרבה. גייס, הכשר, שכר, ביטוחים —
+      ועדיין היא לא תמיד שם. הפתרון שלנו זמין תמיד,
+      ועולה חלק קטן מהעלות החודשית.
+    </p>
+    <div class="pricing-highlights">
+      <div class="pricing-highlight">
+        <span class="pricing-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>
+        תשלום לפי שימוש — שלמו רק על שיחות שנענו
+      </div>
+      <div class="pricing-highlight">
+        <span class="pricing-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>
+        ללא עלויות הקמה
+      </div>
+      <div class="pricing-highlight">
+        <span class="pricing-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>
+        אין שכר, אין ביטוח, אין ימי מחלה
+      </div>
+      <div class="pricing-highlight">
+        <span class="pricing-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span>
+        הוסיפו כיסוי שעות בלחיצה — ללא חוזה חדש
+      </div>
+    </div>
+  </div>
+  <div class="pricing-cta" data-reveal>
+    <h3 class="pricing-cta-title">בואו נחשב ביחד</h3>
+    <p class="pricing-cta-sub">
+      ספרו לנו על נפח השיחות שלכם<br>
+      ונבנה חבילה שמתאימה לעסק.
+    </p>
+    <a href="contact-page-design.html" class="btn-pricing">קבלו הצעת מחיר ←</a>
+    <p class="pricing-note">בלי התחייבות. בלי חוזים ארוכים.</p>
+  </div>
+</section>
+
+<!-- ============================================
+     RELATED SERVICES
+     ============================================ -->
+<section class="related" aria-labelledby="sa-related-heading">
+  <div class="related-header" data-reveal>
+    <div class="section-tag"><span class="section-tag-dot" aria-hidden="true"></span> שירותים נוספים</div>
+    <h2 class="related-heading" id="sa-related-heading">עובד מצוין ביחד</h2>
+  </div>
+  <div class="related-grid">
+    <a href="service-phone-systems-design.html" class="related-card" data-reveal>
+      <div class="related-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.58 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l1.62-1.62a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg></div>
+      <div>
+        <h3 class="related-name">מערכות תקשורת</h3>
+        <p class="related-desc">מרכזיית IP בענן — שלוחות, תפריט קולי, הקלטות, ניהול ממוחשב. התשתית שמשלימה את שירות המענה.</p>
+        <span class="related-link">למדו עוד ←</span>
+      </div>
+    </a>
+    <a href="service-virtual-numbers-design.html" class="related-card" data-reveal>
+      <div class="related-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h.01"/><path d="M12 9h.01"/><path d="M15 9h.01"/><path d="M9 12h.01"/><path d="M12 12h.01"/><path d="M15 12h.01"/><path d="M9 15h.01"/><path d="M12 15h.01"/><path d="M15 15h.01"/></svg></div>
+      <div>
+        <h3 class="related-name">מספרים וירטואליים</h3>
+        <p class="related-desc">הוסיפו מספר 1-800 או מספר מקומי שמנתב לשירות המענה — לקוחות מכל הארץ, נציג אחד עונה.</p>
+        <span class="related-link">למדו עוד ←</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ============================================
+     CTA
+     ============================================ -->
+<section class="cta-section" aria-labelledby="sa-cta-heading">
+  <div class="cta-inner" data-reveal>
+    <h2 class="cta-heading" id="sa-cta-heading">הצלצול הבא יכול<br>להיות <em>עסקה חדשה.</em></h2>
+    <p class="cta-sub">שיחת ייעוץ קצרה — ותתחילו לקבל מענה מקצועי בתוך 48 שעות. בלי ניירת.</p>
+    <a href="contact-page-design.html" class="btn-primary">בואו נדבר ←</a>
+  </div>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<div id="site-footer"></div>
+
+<script>
+// Custom cursor
+const dot = document.querySelector('.cursor-dot');
+const ring = document.querySelector('.cursor-ring');
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    dot.style.left = (e.clientX - 5) + 'px';
+    dot.style.top = (e.clientY - 5) + 'px';
+    ring.style.left = (e.clientX - 20) + 'px';
+    ring.style.top = (e.clientY - 20) + 'px';
+  });
+  document.querySelectorAll('a, button, .feature-card, .persona-card, .related-card, .operator-card').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+} else {
+  dot.style.display = 'none';
+  ring.style.display = 'none';
+}
+
+// Nav scroll state
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+// Scroll reveal
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('revealed');
+      // For inline-style opacity elements in explainer strip
+      if (e.target.style.opacity === '0') {
+        e.target.style.transition = 'opacity 0.8s cubic-bezier(0.33,1,0.68,1), transform 0.8s cubic-bezier(0.33,1,0.68,1)';
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+      ro.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('[data-reveal]').forEach(el => ro.observe(el));
+
+// Smooth scroll anchor links
+document.querySelectorAll('a[href^="#"]').forEach(l => {
+  l.addEventListener('click', e => {
+    const t = document.querySelector(l.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+</script>
+</body>
+</html>

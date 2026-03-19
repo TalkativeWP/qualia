@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qualia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500&family=Noto+Serif+Hebrew:wght@300;600;900&family=Noto+Sans+Hebrew:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="header-footer.js" defer></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange: #E8863A;
+  --orange-glow: rgba(232, 134, 58, 0.2);
+  --orange-soft: rgba(232, 134, 58, 0.08);
+  --parchment: #FAF6F1;
+  --sand: #E7DDD3;
+  --stone: #C4977A;
+  --warm-dark: #1C1917;
+  --warm-gray: #6B6460;
+  --warm-light: #D6CEC6;
+  --orange-text: #C46820;
+  --font-display: 'Fraunces', 'Noto Serif Hebrew', serif;
+  --font-body: 'DM Sans', 'Noto Sans Hebrew', sans-serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--parchment);
+  color: var(--warm-dark);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: default;
+}
+
+::selection {
+  background: var(--orange);
+  color: white;
+}
+
+/* ============================================
+   CUSTOM CURSOR — warm circle
+   ============================================ */
+.cursor-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease;
+  mix-blend-mode: exclusion;
+}
+
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+  transform: translate(-15px, -15px);
+  opacity: 0.5;
+}
+
+.cursor-ring.hovering {
+  width: 60px;
+  height: 60px;
+  transform: translate(-25px, -25px);
+  border-color: var(--orange);
+  opacity: 1;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.8rem 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav.scrolled {
+  background: rgba(250, 246, 241, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1rem 3.5rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: var(--warm-dark);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: opacity 0.3s;
+}
+
+.hero-active .nav-logo { color: white; }
+.nav.scrolled .nav-logo { color: var(--warm-dark); }
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--warm-dark);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.hero-active .nav-links a { color: rgba(255,255,255,0.8); }
+.nav.scrolled .nav-links a { color: var(--warm-dark); }
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  width: 0;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+  transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta-btn {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+  padding: 0.7rem 1.8rem;
+  background: var(--orange);
+  color: var(--warm-dark) !important;
+  border-radius: 100px;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 2px 12px rgba(232, 134, 58, 0.25);
+}
+
+.nav-cta-btn::after { display: none !important; }
+.nav-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232, 134, 58, 0.35); }
+.hero-active .nav-cta-btn { color: var(--warm-dark) !important; }
+
+/* ============================================
+   CONTAINER UTILITY
+   ============================================ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 80px);
+}
+
+/* ============================================
+   HERO — CURTAIN WIPE CAROUSEL
+   ============================================ */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 700px;
+  overflow: hidden;
+  background: var(--warm-dark);
+}
+
+.hero__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  z-index: 1;
+  will-change: clip-path, opacity;
+}
+.hero__slide.is-active {
+  opacity: 1;
+  z-index: 2;
+}
+.hero__slide.is-exiting {
+  z-index: 3;
+  opacity: 1;
+}
+
+.hero__slide-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.05);
+  transition: transform 8s linear;
+}
+.hero__slide.is-active .hero__slide-bg {
+  transform: scale(1);
+}
+
+/* Hero photography */
+.hero__slide:nth-child(1) .hero__slide-bg {
+  background:
+    linear-gradient(135deg, rgba(28, 25, 23, 0.35) 0%, rgba(28, 25, 23, 0.1) 50%),
+    linear-gradient(to bottom, transparent 30%, rgba(28, 25, 23, 0.75) 100%),
+    url('hero-slide-1.png') center / cover no-repeat;
+}
+.hero__slide:nth-child(2) .hero__slide-bg {
+  background:
+    linear-gradient(135deg, rgba(28, 25, 23, 0.4) 0%, rgba(28, 25, 23, 0.1) 60%),
+    linear-gradient(to bottom, transparent 35%, rgba(28, 25, 23, 0.7) 100%),
+    url('hero-slide-2.png') center / cover no-repeat;
+}
+.hero__slide:nth-child(3) .hero__slide-bg {
+  background:
+    linear-gradient(135deg, rgba(28, 25, 23, 0.3) 0%, rgba(28, 25, 23, 0.05) 55%),
+    linear-gradient(to bottom, transparent 30%, rgba(28, 25, 23, 0.7) 100%),
+    url('hero-slide-3.png') center / cover no-repeat;
+}
+
+/* Curtain wipe line */
+.hero__wipe-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--orange);
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 30px rgba(232, 134, 58, 0.6), 0 0 60px rgba(232, 134, 58, 0.2);
+}
+
+/* Hero content overlay */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: clamp(60px, 10vh, 120px);
+}
+.hero__content { width: 100%; }
+
+.hero__eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.hero__eyebrow::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--orange);
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6.5vw, 82px);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--parchment);
+  max-width: 750px;
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+}
+.hero__title em {
+  font-style: italic;
+  font-variation-settings: 'opsz' 144;
+  color: var(--orange);
+}
+
+.hero__subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(15px, 1.6vw, 18px);
+  color: rgba(250, 246, 241, 0.7);
+  max-width: 480px;
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 40px;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 32px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.5s var(--ease-out-expo);
+  position: relative;
+}
+.btn--solid {
+  background: var(--orange);
+  color: var(--warm-dark);
+  font-weight: 600;
+}
+.btn--solid:hover {
+  background: #D67A30;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(232, 134, 58, 0.35);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--parchment);
+  border: 1px solid rgba(250, 246, 241, 0.3);
+}
+.btn--ghost:hover {
+  border-color: var(--parchment);
+  background: rgba(250, 246, 241, 0.08);
+}
+.btn--dark {
+  background: var(--warm-dark);
+  color: var(--parchment);
+}
+.btn--dark:hover {
+  background: #2C2621;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(28, 25, 23, 0.3);
+}
+.btn--outline-dark {
+  background: transparent;
+  border: 1px solid var(--warm-dark);
+  color: var(--warm-dark);
+}
+.btn--outline-dark:hover {
+  background: var(--warm-dark);
+  color: var(--parchment);
+}
+.btn__arrow {
+  transition: transform 0.3s var(--ease-out-expo);
+}
+.btn:hover .btn__arrow {
+  transform: translateX(-4px);
+}
+
+/* Hero pagination */
+.hero__pagination {
+  position: absolute;
+  left: clamp(24px, 5vw, 80px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.hero__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(250, 246, 241, 0.4);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.4s var(--ease-out-expo);
+  padding: 0;
+  position: relative;
+}
+.hero__dot::before {
+  content: '';
+  position: absolute;
+  inset: -16px;
+}
+.hero__dot.is-active {
+  background: var(--orange);
+  border-color: var(--orange);
+  transform: scale(1.3);
+}
+
+/* Scroll indicator */
+.hero__scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(250, 246, 241, 0.5);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  font-weight: 400;
+}
+.hero__scroll-line {
+  width: 1px;
+  height: 40px;
+  background: rgba(250, 246, 241, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.hero__scroll-line::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--orange);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0% { top: -100%; }
+  50% { top: 100%; }
+  100% { top: 100%; }
+}
+
+/* Hero pause button */
+.hero__pause {
+  position: absolute;
+  bottom: 32px;
+  right: clamp(24px, 5vw, 80px);
+  z-index: 6;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(250, 246, 241, 0.3);
+  background: rgba(28, 25, 23, 0.3);
+  backdrop-filter: blur(8px);
+  color: var(--parchment);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+.hero__pause:hover {
+  background: rgba(28, 25, 23, 0.5);
+  border-color: rgba(250, 246, 241, 0.5);
+}
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1024px) {
+  .hero__pagination { display: none; }
+}
+@media (max-width: 768px) {
+  .hero__scroll { display: none; }
+}
+
+/* ============================================
+   SCROLLING MARQUEE — warm trust band
+   ============================================ */
+.marquee-section {
+  padding: 1.5rem 0;
+  background: var(--warm-dark);
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  animation: marquee 25s linear infinite;
+  width: max-content;
+}
+
+.marquee-item {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.marquee-diamond {
+  width: 5px;
+  height: 5px;
+  background: var(--orange);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+@keyframes marquee {
+  to { transform: translateX(50%); }
+}
+
+/* ============================================
+   INTRO SECTION — Warm split layout
+   ============================================ */
+.intro {
+  padding: 8rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.intro-visual {
+  position: relative;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.intro-visual.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.intro-img-wrapper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 4/5;
+  box-shadow: 0 24px 64px rgba(28, 25, 23, 0.12);
+}
+
+.intro-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--sand);
+}
+
+/* Floating accent card */
+.intro-float-card {
+  position: absolute;
+  bottom: -2rem;
+  left: -2rem;
+  background: white;
+  padding: 1.8rem 2.2rem;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(28, 25, 23, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  z-index: 2;
+}
+
+.intro-float-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--orange-soft);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.intro-float-number {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.8rem;
+  color: var(--warm-dark);
+  line-height: 1;
+}
+
+.intro-float-label {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+  font-weight: 400;
+}
+
+.intro-text {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.intro-text.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1) 0.15s;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--orange-text);
+  letter-spacing: 0.08em;
+  margin-bottom: 1.5rem;
+  padding: 0.4rem 1rem 0.4rem 0;
+  border-radius: 100px;
+}
+
+.section-tag-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--orange);
+  border-radius: 50%;
+}
+
+.intro-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  line-height: 1.2;
+  color: var(--warm-dark);
+  margin-bottom: 1.5rem;
+}
+
+.intro-heading em {
+  font-style: italic;
+  color: var(--orange-text);
+}
+
+.intro-body {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--warm-gray);
+  margin-bottom: 2rem;
+  max-width: 480px;
+}
+
+.intro-stats {
+  display: flex;
+  gap: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--sand);
+}
+
+.intro-stat-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2.2rem;
+  color: var(--warm-dark);
+}
+
+.intro-stat-num span { color: var(--orange); }
+
+.intro-stat-label {
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+  margin-top: 0.3rem;
+}
+
+/* ============================================
+   SERVICES — Warm Cards
+   ============================================ */
+.services {
+  padding: 8rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.services-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.services-header.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.services-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  margin-bottom: 1rem;
+}
+
+.services-sub {
+  font-size: 1rem;
+  color: var(--warm-gray);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.service-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 2px 16px rgba(28, 25, 23, 0.04);
+  opacity: 0;
+  transform: translateY(30px);
+  cursor: pointer;
+}
+
+.service-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.service-card:nth-child(2).revealed { transition-delay: 0.1s; }
+.service-card:nth-child(3).revealed { transition-delay: 0.2s; }
+
+.service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 48px rgba(28, 25, 23, 0.1);
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: var(--orange);
+  border-radius: 20px 20px 0 0;
+  transform: scaleX(0);
+  transition: transform 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.service-card:hover::before {
+  transform: scaleX(1);
+}
+
+.service-icon-wrap {
+  width: 56px;
+  height: 56px;
+  background: var(--orange-soft);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: background 0.4s ease;
+}
+
+.service-card:hover .service-icon-wrap {
+  background: var(--orange-glow);
+}
+
+.service-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  color: var(--warm-dark);
+}
+
+.service-desc {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--warm-gray);
+  margin-bottom: 1.5rem;
+}
+
+.service-link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--orange-text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: gap 0.3s ease;
+}
+
+.service-link:hover { gap: 0.8rem; }
+
+/* ============================================
+   IMAGE BREAK — Full width warm image
+   ============================================ */
+.image-break {
+  position: relative;
+  height: 60vh;
+  overflow: hidden;
+}
+
+.image-break-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--sand);
+}
+
+.image-break-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--parchment) 0%, rgba(250, 246, 241, 0.85) 25%, transparent 55%, transparent 75%, var(--parchment) 100%);
+}
+
+.image-break-text {
+  position: absolute;
+  bottom: 4rem;
+  right: 4rem;
+  left: 4rem;
+  text-align: center;
+  z-index: 2;
+}
+
+.image-break-quote {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--warm-dark);
+  line-height: 1.5;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.image-break-quote strong {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--orange-text);
+}
+
+/* ============================================
+   TESTIMONIALS — Warm carousel
+   ============================================ */
+.testimonials {
+  padding: 8rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.testimonials-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+}
+
+.testimonials-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+
+.testimonial-arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.testimonial-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sand);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--warm-dark);
+  transition: all 0.3s ease;
+}
+
+.testimonial-arrow:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.testimonial-track {
+  display: flex;
+  gap: 2rem;
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.testimonial-card {
+  min-width: calc(50% - 1rem);
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 16px rgba(28,25,23,0.04);
+  position: relative;
+}
+
+.testimonial-card::before {
+  content: '"';
+  font-family: var(--font-display);
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--orange);
+  opacity: 0.1;
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  line-height: 1;
+}
+
+.testimonial-text {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--warm-dark);
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.testimonial-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange-soft), var(--sand));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--orange);
+}
+
+.testimonial-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.testimonial-role {
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+.cta-section {
+  margin: 4rem;
+  border-radius: 28px;
+  background: var(--warm-dark);
+  padding: 6rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Warm gradient orbs */
+.cta-section::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,134,58,0.15) 0%, transparent 70%);
+  top: -200px;
+  right: -100px;
+  pointer-events: none;
+}
+
+.cta-section::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,134,58,0.08) 0%, transparent 70%);
+  bottom: -150px;
+  left: -50px;
+  pointer-events: none;
+}
+
+.cta-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  color: white;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.cta-heading em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--orange);
+}
+
+.cta-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 1.1rem 2.8rem;
+  background: var(--orange);
+  color: var(--warm-dark);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 4px 24px rgba(232, 134, 58, 0.3);
+}
+
+.btn-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(232, 134, 58, 0.4);
+}
+
+/* ============================================
+   CONTACT / FORM
+   ============================================ */
+.contact {
+  padding: 8rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: start;
+}
+
+.contact-info {
+  opacity: 0; transform: translateY(30px);
+}
+
+.contact-info.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.contact-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.2;
+  margin-bottom: 1.2rem;
+}
+
+.contact-body {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--warm-gray);
+  margin-bottom: 2.5rem;
+  max-width: 400px;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.contact-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contact-detail-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--orange-soft);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.contact-detail-text {
+  font-size: 0.9rem;
+  color: var(--warm-dark);
+  font-weight: 400;
+}
+
+.contact-detail-label {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+}
+
+.contact-form-wrap {
+  background: white;
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px rgba(28,25,23,0.06);
+  opacity: 0; transform: translateY(30px);
+}
+
+.contact-form-wrap.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1) 0.15s;
+}
+
+.form-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+  font-size: 0.85rem;
+  color: var(--warm-gray);
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--warm-dark);
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border: 1.5px solid #B8A99A;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--warm-dark);
+  background: var(--parchment);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: var(--orange);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(232,134,58,0.6);
+}
+
+.form-input::placeholder {
+  color: var(--warm-light);
+}
+
+textarea.form-input {
+  resize: none;
+  height: 100px;
+}
+
+.form-submit {
+  width: 100%;
+  padding: 1rem;
+  background: var(--orange);
+  color: var(--warm-dark);
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 2px 12px rgba(232, 134, 58, 0.2);
+  margin-top: 0.5rem;
+}
+
+.form-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(232, 134, 58, 0.3);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  background: var(--warm-dark);
+  padding: 4rem;
+  border-radius: 28px 28px 0 0;
+  margin: 0 0;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 2rem;
+}
+
+.footer-brand-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footer-brand-desc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.7;
+  max-width: 300px;
+}
+
+.footer-col-title {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.05em;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.footer-col a {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-col a:hover { color: var(--orange); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.2);
+}
+
+.footer-social {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-social a {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(232,134,58,0.1);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .intro { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 2.5rem; }
+  .intro-visual { order: -1; }
+  .services { padding: 5rem 2.5rem; }
+  .services-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+  .testimonial-card { min-width: calc(100% - 0rem); }
+  .contact { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 2.5rem; }
+  .cta-section { margin: 2rem; padding: 4rem 2.5rem; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .nav { padding: 1.2rem 2rem; }
+  .cursor-dot, .cursor-ring { display: none; }
+}
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .hero__actions { flex-direction: column; align-items: flex-start; }
+  .intro-stats { flex-direction: column; gap: 1.5rem; }
+  .testimonials { padding: 5rem 2.5rem; }
+  .testimonials-header { flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+  .footer { padding: 3rem 2rem; }
+  .image-break { height: 40vh; }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .hero__slide-bg { transform: none !important; }
+}
+
+/* ============================================
+   ACCESSIBILITY UTILITIES
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.field-error {
+  color: var(--orange-text);
+  font-size: 0.875rem;
+  margin-top: 4px;
+  display: block;
+  min-height: 1.2em;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+  margin-top: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<!-- NAVIGATION -->
+<div id="site-header"></div>
+
+<!-- HERO CAROUSEL -->
+<section class="hero" id="main-content" aria-label="מצגת ראשית">
+  <div class="hero__slide is-active" data-slide="0">
+    <div class="hero__slide-bg" aria-hidden="true"></div>
+  </div>
+  <div class="hero__slide" data-slide="1">
+    <div class="hero__slide-bg" aria-hidden="true"></div>
+  </div>
+  <div class="hero__slide" data-slide="2">
+    <div class="hero__slide-bg" aria-hidden="true"></div>
+  </div>
+
+  <div class="hero__wipe-line" id="wipeLine"></div>
+
+  <div class="hero__overlay">
+    <div class="container hero__content">
+      <div class="hero__eyebrow" id="heroEyebrow" aria-hidden="true">חוויית תקשורת עסקית</div>
+      <h1 class="hero__title" id="heroTitle">
+        כשהתקשורת<br>הופכת ל<em>חוויה</em>
+      </h1>
+      <p class="hero__subtitle" id="heroSubtitle">
+        מערכות טלפוניה עסקית שתוכננו סביב הצרכים שלכם — עם תשומת לב לכל פרט, מאיכות השיחה ועד חוויית הניהול.
+      </p>
+      <div class="hero__actions">
+        <a href="contact-page-design.html" class="btn btn--solid">גלו את <span lang="en">Qualia</span> <span class="btn__arrow" aria-hidden="true">&#8592;</span></a>
+        <a href="services-page-design.html" class="btn btn--ghost">השירותים שלנו</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__pagination" role="group" aria-label="ניווט שקפים">
+    <button class="hero__dot is-active" data-goto="0" aria-label="שקופית 1" aria-current="true"></button>
+    <button class="hero__dot" data-goto="1" aria-label="שקופית 2" aria-current="false"></button>
+    <button class="hero__dot" data-goto="2" aria-label="שקופית 3" aria-current="false"></button>
+  </div>
+
+  <button class="hero__pause" id="heroPause" aria-label="השהה מצגת שקפים" aria-pressed="false">
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+  </button>
+
+  <!-- Live region: announces slide changes to screen readers -->
+  <div id="heroLiveRegion" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+  <div class="hero__scroll" aria-hidden="true">
+    <div class="hero__scroll-line"></div>
+    SCROLL
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section" aria-label="נקודות מפתח: מאז 2010, מאות לקוחות עסקיים, שירות ישראלי מקומי, ללא התחייבות, תמיכה מלאה">
+  <div class="marquee-track" aria-hidden="true">
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>מאז 2010</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>מאות לקוחות עסקיים</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>שירות ישראלי מקומי</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>ללא התחייבות</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>תמיכה מלאה</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>מאז 2010</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>מאות לקוחות עסקיים</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>שירות ישראלי מקומי</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>ללא התחייבות</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>תמיכה מלאה</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>מאז 2010</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>מאות לקוחות עסקיים</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>שירות ישראלי מקומי</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>ללא התחייבות</span>
+    <span class="marquee-item"><span class="marquee-diamond" aria-hidden="true"></span>תמיכה מלאה</span>
+  </div>
+</div>
+
+<!-- INTRO / ABOUT -->
+<section class="intro" id="about" aria-labelledby="intro-heading">
+  <div class="intro-visual" data-reveal>
+    <div class="intro-img-wrapper">
+      <div class="intro-img" style="background: url('intro-section.png') center/cover no-repeat;" role="img" aria-label="משרד מקצועי עם ציוד תקשורת"></div>
+    </div>
+    <div class="intro-float-card">
+      <div class="intro-float-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <div>
+        <div class="intro-float-number">15+</div>
+        <div class="intro-float-label">שנות ניסיון</div>
+      </div>
+    </div>
+  </div>
+  <div class="intro-text" data-reveal>
+    <div class="section-tag">
+      <span class="section-tag-dot" aria-hidden="true"></span>
+      מי אנחנו
+    </div>
+    <h2 class="intro-heading" id="intro-heading">
+      תקשורת עסקית<br>
+      שעובדת <em>בשבילך</em>
+    </h2>
+    <p class="intro-body">
+      כשהתקשורת עובדת — אף אחד לא חושב עליה. הלקוח מתקשר,
+      מישהו עונה, העסקה נסגרת. מאז 2010 אנחנו בונים את התשתית
+      שמאפשרת לעסקים ישראליים להישמע גדול, מקצועי ואמין.
+    </p>
+    <div class="intro-stats">
+      <div>
+        <div class="intro-stat-num">500<span>+</span></div>
+        <div class="intro-stat-label">לקוחות עסקיים</div>
+      </div>
+      <div>
+        <div class="intro-stat-num">99.9<span>%</span></div>
+        <div class="intro-stat-label">זמינות שנתית</div>
+      </div>
+      <div>
+        <div class="intro-stat-num">24<span>h</span></div>
+        <div class="intro-stat-label">זמן הקמה</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services" aria-labelledby="services-heading">
+  <div class="services-header" data-reveal>
+    <div class="section-tag" style="justify-content: center;">
+      <span class="section-tag-dot" aria-hidden="true"></span>
+      השירותים שלנו
+    </div>
+    <h2 class="services-heading" id="services-heading">כל מה שהעסק שלך צריך לתקשורת</h2>
+    <p class="services-sub">
+      שלושה פתרונות שעובדים יחד או בנפרד — תמיד בהתאמה מלאה לצרכים שלך.
+    </p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card" data-reveal>
+      <div class="service-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <h3 class="service-title">מערכות תקשורת</h3>
+      <p class="service-desc">
+        מרכזיית IP בענן — ניתוב חכם, הקלטות, ניהול שלוחות ודשבורד מלא.
+        גדלה עם העסק, ללא חומרה.
+      </p>
+      <a href="#contact" class="service-link">למדו עוד ←</a>
+    </div>
+    <div class="service-card" data-reveal>
+      <div class="service-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <h3 class="service-title">מספרים וירטואליים</h3>
+      <p class="service-desc">
+        מספרים מקומיים, 1-800 ובינלאומיים — פעילים מיד, ללא חומרה,
+        עם העברה לכל מכשיר.
+      </p>
+      <a href="#contact" class="service-link">למדו עוד ←</a>
+    </div>
+    <div class="service-card" data-reveal>
+      <div class="service-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14a9 9 0 0 1 18 0"/><path d="M3 14v3a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H3z"/><path d="M21 14v3a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3z"/></svg></div>
+      <h3 class="service-title">שירות טלפוני</h3>
+      <p class="service-desc">
+        מענה אנושי מקצועי בשם החברה שלך — תיאום פגישות, קבלת הודעות,
+        כאילו יש לך צוות שלם.
+      </p>
+      <a href="#contact" class="service-link">למדו עוד ←</a>
+    </div>
+  </div>
+</section>
+
+<!-- IMAGE BREAK -->
+<section class="image-break">
+  <div class="image-break-img" style="background: url('image-break.png') center/cover no-repeat;" role="img" aria-label="תמונת רקע — אנשי עסקים בפגישה"></div>
+  <div class="image-break-overlay"></div>
+  <div class="image-break-text" data-reveal>
+    <blockquote class="image-break-quote">
+      "המערכת הטובה ביותר היא זו<br>
+      <strong>שלא מרגישים בה.</strong>"
+    </blockquote>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials" aria-labelledby="testimonials-heading">
+  <div class="testimonials-header">
+    <div>
+      <div class="section-tag">
+        <span class="section-tag-dot" aria-hidden="true"></span>
+        הלקוחות מדברים
+      </div>
+      <h2 class="testimonials-heading" id="testimonials-heading">מה אומרים עלינו</h2>
+    </div>
+    <div class="testimonial-arrows">
+      <button class="testimonial-arrow" id="prevTestimonial" aria-label="המלצה קודמת">→</button>
+      <button class="testimonial-arrow" id="nextTestimonial" aria-label="המלצה הבאה">←</button>
+    </div>
+  </div>
+  <div style="overflow: hidden;">
+    <div class="testimonial-track" id="testimonialTrack">
+      <div class="testimonial-card">
+        <p class="testimonial-text">
+          "עברנו מספק תקשורת גדול ל-<span lang="en">Qualia</span> והשינוי היה מיידי.
+          פתאום מישהו באמת עונה כשמתקשרים. המערכת פשוט עובדת,
+          ואנחנו חוסכים 40% בחודש."
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">ר.כ</div>
+          <div>
+            <div class="testimonial-name">רונית כהן</div>
+            <div class="testimonial-role">מנכ"לית, סטודיו אדריכלות</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-text">
+          "המספרים הוירטואליים שינו את הנוכחות שלנו. יש לנו מספר 1-800 למכירות,
+          מספר נפרד לשירות, והכל מגיע לאותו צוות. הלקוחות חושבים שאנחנו חברה פי עשר."
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">א.ל</div>
+          <div>
+            <div class="testimonial-name">אבי לוי</div>
+            <div class="testimonial-role">בעלים, ייבוא ושיווק</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-text">
+          "השירות הטלפוני של <span lang="en">Qualia</span> זה כמו שיש לנו עוד עובד.
+          לקוחות מתקשרים, מקבלים מענה מקצועי, ואני מקבלת סיכום במייל. מושלם."
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">ד.ש</div>
+          <div>
+            <div class="testimonial-name">דנה שפירא</div>
+            <div class="testimonial-role">עורכת דין</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-text">
+          "הצוות של <span lang="en">Qualia</span> מכיר את המערכת שלנו בעל פה. כל פנייה נפתרת
+          מהר, בלי להעביר בין נציגים. ככה צריך להרגיש שירות."
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">מ.ב</div>
+          <div>
+            <div class="testimonial-name">מיכל בן-דוד</div>
+            <div class="testimonial-role">סמנכ"לית תפעול, חברת הייטק</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" aria-labelledby="cta-heading">
+  <div class="cta-inner" data-reveal>
+    <h2 class="cta-heading" id="cta-heading">
+      מוכנים לתקשורת<br><em>שעובדת?</em>
+    </h2>
+    <p class="cta-sub">
+      שיחת ייעוץ קצרה ונבין בדיוק מה העסק שלך צריך. בלי התחייבות, בלי מכירות.
+    </p>
+    <a href="#contact" class="btn-cta">בואו נדבר ←</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact" aria-labelledby="contact-heading">
+  <div class="contact-info" data-reveal>
+    <div class="section-tag">
+      <span class="section-tag-dot" aria-hidden="true"></span>
+      יצירת קשר
+    </div>
+    <h2 class="contact-heading" id="contact-heading">ספרו לנו על<br>העסק שלכם</h2>
+    <p class="contact-body">
+      נחזור אליכם תוך שעות עבודה בודדות עם הצעה מותאמת.
+      בלי הפתעות, בלי אותיות קטנות.
+    </p>
+    <div class="contact-details">
+      <div class="contact-detail-item">
+        <div class="contact-detail-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <div>
+          <div class="contact-detail-text">03-XXX-XXXX</div>
+          <div class="contact-detail-label">טלפון</div>
+        </div>
+      </div>
+      <div class="contact-detail-item">
+        <div class="contact-detail-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+        <div>
+          <div class="contact-detail-text">info@qualia.co.il</div>
+          <div class="contact-detail-label">אימייל</div>
+        </div>
+      </div>
+      <div class="contact-detail-item">
+        <div class="contact-detail-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 15 15"/></svg></div>
+        <div>
+          <div class="contact-detail-text">ראשון — חמישי, 09:00–18:00</div>
+          <div class="contact-detail-label">שעות פעילות</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="contact-form-wrap" data-reveal>
+    <h3 class="form-title">השאירו פרטים</h3>
+    <p class="form-subtitle">ונחזור אליכם בהקדם</p>
+    <form onsubmit="return false;" id="contactFormSimple" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="hp-full-name">שם מלא</label>
+          <input type="text" id="hp-full-name" name="full-name" class="form-input" placeholder="השם שלך" required aria-describedby="hp-full-name-error">
+          <span class="field-error" id="hp-full-name-error" role="alert" aria-live="assertive"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hp-phone">טלפון</label>
+          <input type="tel" id="hp-phone" name="phone" class="form-input" placeholder="05X-XXX-XXXX" required aria-describedby="hp-phone-error hp-phone-hint">
+          <span class="field-hint" id="hp-phone-hint">פורמט: 05X-XXX-XXXX</span>
+          <span class="field-error" id="hp-phone-error" role="alert" aria-live="assertive"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="hp-email">אימייל</label>
+        <input type="email" id="hp-email" name="email" class="form-input" placeholder="your@email.com" aria-describedby="hp-email-error">
+        <span class="field-error" id="hp-email-error" role="alert" aria-live="assertive"></span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="hp-message">איך נוכל לעזור?</label>
+        <textarea id="hp-message" name="message" class="form-input" placeholder="ספרו לנו בקצרה על העסק ומה אתם מחפשים..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">שלחו פנייה ←</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div id="site-footer"></div>
+
+<script>
+// ============================================
+// CUSTOM CURSOR
+// ============================================
+const dot = document.querySelector('.cursor-dot');
+const ring = document.querySelector('.cursor-ring');
+
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    dot.style.left = e.clientX - 5 + 'px';
+    dot.style.top = e.clientY - 5 + 'px';
+    ring.style.left = e.clientX - 20 + 'px';
+    ring.style.top = e.clientY - 20 + 'px';
+  });
+
+  document.querySelectorAll('a, button, .service-card').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+} else {
+  dot.style.display = 'none';
+  ring.style.display = 'none';
+}
+
+// ============================================
+// HERO CAROUSEL — Curtain wipe
+// ============================================
+var heroSlides = document.querySelectorAll('.hero__slide');
+var heroDots = document.querySelectorAll('.hero__dot');
+var wipeLine = document.getElementById('wipeLine');
+var pauseBtn = document.getElementById('heroPause');
+var currentSlide = 0;
+var isAnimating = false;
+var isPaused = false;
+var autoplayTimer;
+
+var heroContent = [
+  {
+    eyebrow: 'חוויית תקשורת עסקית',
+    title: 'כשהתקשורת<br>הופכת ל<em>חוויה</em>',
+    subtitle: 'מערכות טלפוניה עסקית שתוכננו סביב הצרכים שלכם — עם תשומת לב לכל פרט, מאיכות השיחה ועד חוויית הניהול.'
+  },
+  {
+    eyebrow: 'נוכחות גלובלית',
+    title: 'מספר מקומי<br>בכל <em>מדינה</em>',
+    subtitle: 'מספרים וירטואליים ב-45+ מדינות. לקוחות מתקשרים למספר מקומי, אתם עונים מכל מקום בעולם.'
+  },
+  {
+    eyebrow: 'טכנולוגיה חכמה',
+    title: 'בינה מלאכותית<br>ש<em>מקשיבה</em>',
+    subtitle: 'תמלול בזמן אמת, סיכום שיחות אוטומטי, וניתוח סנטימנט. כל שיחה הופכת לתובנה עסקית.'
+  }
+];
+
+function goToSlide(nextIndex) {
+  if (isAnimating || nextIndex === currentSlide) return;
+  isAnimating = true;
+
+  var currentSlideEl = heroSlides[currentSlide];
+  var nextSlideEl = heroSlides[nextIndex];
+  var startX = window.innerWidth;
+
+  wipeLine.style.right = startX + 'px';
+  wipeLine.style.left = 'auto';
+  wipeLine.style.opacity = '1';
+
+  nextSlideEl.style.clipPath = 'inset(0 100% 0 0)';
+  nextSlideEl.classList.add('is-active');
+
+  var duration = 1200;
+  var start = performance.now();
+
+  function animateWipe(now) {
+    var elapsed = now - start;
+    var progress = Math.min(elapsed / duration, 1);
+
+    var eased = progress < 0.5
+      ? 4 * progress * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    var linePos = startX * (1 - eased);
+    wipeLine.style.right = linePos + 'px';
+
+    var revealPercent = (1 - eased) * 100;
+    nextSlideEl.style.clipPath = 'inset(0 ' + revealPercent + '% 0 0)';
+
+    if (progress < 1) {
+      requestAnimationFrame(animateWipe);
+    } else {
+      currentSlideEl.classList.remove('is-active');
+      currentSlideEl.classList.remove('is-exiting');
+      nextSlideEl.style.clipPath = '';
+      wipeLine.style.opacity = '0';
+
+      /* Update hero dots — visual + aria */
+      heroDots.forEach(function(d) {
+        d.classList.remove('is-active');
+        d.setAttribute('aria-current', 'false');
+      });
+      heroDots[nextIndex].classList.add('is-active');
+      heroDots[nextIndex].setAttribute('aria-current', 'true');
+
+      /* Announce slide change to screen readers */
+      var liveRegion = document.getElementById('heroLiveRegion');
+      if (liveRegion && liveRegion.getAttribute('aria-live') !== 'off') {
+        liveRegion.textContent = '';
+        setTimeout(function() {
+          liveRegion.textContent = heroContent[nextIndex].eyebrow + ', שקופית ' + (nextIndex + 1) + ' מתוך ' + heroSlides.length;
+        }, 50);
+      }
+
+      /* Fade text */
+      var eyebrow = document.getElementById('heroEyebrow');
+      var title = document.getElementById('heroTitle');
+      var subtitle = document.getElementById('heroSubtitle');
+
+      eyebrow.style.opacity = '0';
+      title.style.opacity = '0';
+      subtitle.style.opacity = '0';
+
+      setTimeout(function() {
+        eyebrow.textContent = heroContent[nextIndex].eyebrow;
+        title.innerHTML = heroContent[nextIndex].title;
+        subtitle.textContent = heroContent[nextIndex].subtitle;
+
+        eyebrow.style.transition = 'opacity 0.5s ease';
+        title.style.transition = 'opacity 0.5s ease 0.1s';
+        subtitle.style.transition = 'opacity 0.5s ease 0.2s';
+
+        eyebrow.style.opacity = '1';
+        title.style.opacity = '1';
+        subtitle.style.opacity = '1';
+      }, 100);
+
+      currentSlide = nextIndex;
+      isAnimating = false;
+    }
+  }
+
+  requestAnimationFrame(animateWipe);
+}
+
+heroDots.forEach(function(dot) {
+  dot.addEventListener('click', function() {
+    var idx = parseInt(dot.dataset.goto);
+    goToSlide(idx);
+    resetAutoplay();
+  });
+});
+
+function startAutoplay() {
+  if (isPaused) return;
+  autoplayTimer = setInterval(function() {
+    var next = (currentSlide + 1) % heroSlides.length;
+    goToSlide(next);
+  }, 6000);
+}
+function stopAutoplay() {
+  clearInterval(autoplayTimer);
+}
+function resetAutoplay() {
+  stopAutoplay();
+  startAutoplay();
+}
+
+/* Pause / play button */
+var pauseIconSVG = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
+var playIconSVG = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>';
+
+pauseBtn.addEventListener('click', function() {
+  var liveRegion = document.getElementById('heroLiveRegion');
+  if (isPaused) {
+    isPaused = false;
+    pauseBtn.innerHTML = pauseIconSVG;
+    pauseBtn.setAttribute('aria-label', 'השהה מצגת שקפים');
+    pauseBtn.setAttribute('aria-pressed', 'false');
+    if (liveRegion) liveRegion.setAttribute('aria-live', 'polite');
+    startAutoplay();
+  } else {
+    isPaused = true;
+    stopAutoplay();
+    pauseBtn.innerHTML = playIconSVG;
+    pauseBtn.setAttribute('aria-label', 'הפעל מצגת שקפים');
+    pauseBtn.setAttribute('aria-pressed', 'true');
+    if (liveRegion) liveRegion.setAttribute('aria-live', 'off');
+  }
+});
+
+/* Gate autoplay on reduced-motion preference */
+var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!prefersReducedMotion) {
+  startAutoplay();
+} else {
+  isPaused = true;
+  pauseBtn.innerHTML = playIconSVG;
+  pauseBtn.setAttribute('aria-label', 'הפעל מצגת שקפים');
+  pauseBtn.setAttribute('aria-pressed', 'true');
+  var liveRegionInit = document.getElementById('heroLiveRegion');
+  if (liveRegionInit) liveRegionInit.setAttribute('aria-live', 'off');
+}
+
+/* Keyboard focus management: pause autoplay on carousel focus, resume on blur */
+var heroSection = document.querySelector('.hero');
+var carouselFocusTimer;
+heroSection.addEventListener('focusin', function() {
+  clearTimeout(carouselFocusTimer);
+  if (!isPaused) {
+    stopAutoplay();
+  }
+});
+heroSection.addEventListener('focusout', function(e) {
+  /* Only resume if focus left the hero entirely */
+  carouselFocusTimer = setTimeout(function() {
+    if (!heroSection.contains(document.activeElement) && !isPaused) {
+      startAutoplay();
+    }
+  }, 100);
+});
+
+// ============================================
+// NAV SCROLL — set up after deferred header injection fires
+// ============================================
+document.addEventListener('DOMContentLoaded', function () {
+  const nav = document.getElementById('mainNav');
+  const heroSection = document.getElementById('hero');
+  if (!nav || !heroSection) return;
+
+  const navObserver = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) {
+      nav.classList.add('hero-active');
+      nav.classList.remove('scrolled');
+    } else {
+      nav.classList.remove('hero-active');
+      nav.classList.add('scrolled');
+    }
+  }, { threshold: 0.1 });
+
+  navObserver.observe(heroSection);
+});
+
+// ============================================
+// SCROLL REVEALS
+// ============================================
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+// ============================================
+// TESTIMONIAL SLIDER
+// ============================================
+const track = document.getElementById('testimonialTrack');
+const prevBtn = document.getElementById('prevTestimonial');
+const nextBtn = document.getElementById('nextTestimonial');
+let tPos = 0;
+
+function getCardWidth() {
+  const card = track.querySelector('.testimonial-card');
+  const gap = 32; // 2rem
+  return card.offsetWidth + gap;
+}
+
+function getMaxScroll() {
+  return Math.max(0, track.scrollWidth - track.parentElement.offsetWidth);
+}
+
+nextBtn.addEventListener('click', () => {
+  tPos = Math.min(tPos + getCardWidth(), getMaxScroll());
+  track.style.transform = `translateX(${tPos}px)`;
+});
+
+prevBtn.addEventListener('click', () => {
+  tPos = Math.max(tPos - getCardWidth(), 0);
+  track.style.transform = `translateX(${tPos}px)`;
+});
+
+// ============================================
+// SMOOTH ANCHOR SCROLLING
+// ============================================
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ============================================
+// HOMEPAGE CONTACT FORM — accessible validation
+// ============================================
+(function() {
+  var simpleForm = document.getElementById('contactFormSimple');
+  if (!simpleForm) return;
+
+  function setFieldError(input, errorSpanId, message) {
+    input.setAttribute('aria-invalid', 'true');
+    var span = document.getElementById(errorSpanId);
+    if (span) span.textContent = message;
+  }
+
+  function clearFieldError(input, errorSpanId) {
+    input.removeAttribute('aria-invalid');
+    var span = document.getElementById(errorSpanId);
+    if (span) span.textContent = '';
+  }
+
+  simpleForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var firstInvalid = null;
+
+    var requiredFields = simpleForm.querySelectorAll('[required]');
+    requiredFields.forEach(function(field) {
+      if (!field.checkValidity()) {
+        var errorId = field.getAttribute('aria-describedby')
+          ? field.getAttribute('aria-describedby').split(' ').find(function(id) { return id.indexOf('-error') !== -1; })
+          : null;
+        setFieldError(field, errorId, 'שדה חובה');
+        if (!firstInvalid) firstInvalid = field;
+      } else {
+        var errorId = field.getAttribute('aria-describedby')
+          ? field.getAttribute('aria-describedby').split(' ').find(function(id) { return id.indexOf('-error') !== -1; })
+          : null;
+        clearFieldError(field, errorId);
+      }
+    });
+
+    if (firstInvalid) {
+      firstInvalid.focus();
+      return;
+    }
+
+    /* All required fields valid — proceed with submission */
+    simpleForm.querySelector('.form-submit').textContent = 'נשלח! תודה ✓';
+    simpleForm.querySelector('.form-submit').disabled = true;
+  });
+
+  /* Clear error on input change */
+  simpleForm.querySelectorAll('[required]').forEach(function(field) {
+    field.addEventListener('input', function() {
+      if (field.checkValidity()) {
+        var errorId = field.getAttribute('aria-describedby')
+          ? field.getAttribute('aria-describedby').split(' ').find(function(id) { return id.indexOf('-error') !== -1; })
+          : null;
+        clearFieldError(field, errorId);
+      }
+    });
+  });
+}());
+</script>
+</body>
+</html>

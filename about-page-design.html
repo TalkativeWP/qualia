@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qualia — הסיפור שלנו</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500&family=Noto+Serif+Hebrew:wght@300;600;900&family=Noto+Sans+Hebrew:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="header-footer.js" defer></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange: #E8863A;
+  --orange-glow: rgba(232, 134, 58, 0.2);
+  --orange-soft: rgba(232, 134, 58, 0.08);
+  --parchment: #FAF6F1;
+  --sand: #E7DDD3;
+  --stone: #C4977A;
+  --warm-dark: #1C1917;
+  --warm-gray: #6B6460;
+  --warm-light: #D6CEC6;
+  --orange-text: #C46820;
+  --font-display: 'Fraunces', 'Noto Serif Hebrew', serif;
+  --font-body: 'DM Sans', 'Noto Sans Hebrew', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--parchment);
+  color: var(--warm-dark);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--orange);
+  color: white;
+}
+
+/* ============================================
+   CURSOR
+   ============================================ */
+.cursor-dot {
+  width: 10px; height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease;
+  mix-blend-mode: exclusion;
+}
+
+.cursor-ring {
+  width: 40px; height: 40px;
+  border: 1.5px solid var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+  transform: translate(-15px, -15px);
+  opacity: 0.5;
+}
+
+.cursor-ring.hovering {
+  width: 60px; height: 60px;
+  transform: translate(-25px, -25px);
+  opacity: 1;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.8rem 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(250, 246, 241, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav.scrolled {
+  padding: 1rem 3.5rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: var(--warm-dark);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--warm-dark);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; right: 0;
+  width: 0; height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+  transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav-links a:hover::after { width: 100%; }
+
+.nav-links a.active { color: var(--orange-text); }
+.nav-links a.active::after { width: 100%; }
+
+.nav-cta-btn {
+  font-weight: 500 !important;
+  padding: 0.7rem 1.8rem;
+  background: var(--orange);
+  color: var(--warm-dark) !important;
+  border-radius: 100px;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 2px 12px rgba(232, 134, 58, 0.25);
+}
+
+.nav-cta-btn::after { display: none !important; }
+.nav-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232, 134, 58, 0.35); }
+
+/* ============================================
+   PAGE HERO — Intimate, editorial
+   ============================================ */
+.page-hero {
+  padding: 10rem 4rem 6rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+}
+
+.page-hero-text {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1s cubic-bezier(0.33, 1, 0.68, 1) 0.3s forwards;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--orange-text);
+  letter-spacing: 0.08em;
+  margin-bottom: 1.5rem;
+}
+
+.section-tag-dot {
+  width: 7px; height: 7px;
+  background: var(--orange);
+  border-radius: 50%;
+}
+
+.page-hero-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+  line-height: 1.15;
+  color: var(--warm-dark);
+  margin-bottom: 1.5rem;
+}
+
+.page-hero-heading em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--orange-text);
+}
+
+.page-hero-lead {
+  font-size: 1.15rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--warm-gray);
+  max-width: 480px;
+}
+
+.page-hero-image {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1s cubic-bezier(0.33, 1, 0.68, 1) 0.5s forwards;
+}
+
+.page-hero-img-wrap {
+  border-radius: 24px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  box-shadow: 0 24px 64px rgba(28, 25, 23, 0.1);
+  position: relative;
+}
+
+.page-hero-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  background: url('about-hero.png') center/cover no-repeat;
+}
+
+/* Orange corner accent */
+.page-hero-img-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 80px; height: 80px;
+  background: var(--orange);
+  border-radius: 24px 0 0 0;
+  opacity: 0.9;
+}
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   STORY SECTION — Large quote + text
+   ============================================ */
+.story {
+  padding: 8rem 4rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.story-quote {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  line-height: 1.6;
+  color: var(--warm-dark);
+  margin-bottom: 3rem;
+  position: relative;
+  opacity: 0; transform: translateY(30px);
+}
+
+.story-quote.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.story-quote::before {
+  content: '״';
+  font-family: var(--font-display);
+  font-size: 8rem;
+  font-weight: 900;
+  color: var(--orange);
+  opacity: 0.12;
+  position: absolute;
+  top: -3rem;
+  right: 50%;
+  transform: translateX(50%);
+  line-height: 1;
+}
+
+.story-quote strong {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--orange-text);
+}
+
+.story-divider {
+  width: 60px; height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+  margin: 0 auto 3rem;
+  opacity: 0;
+}
+
+.story-divider.revealed {
+  opacity: 1;
+  transition: opacity 0.8s ease 0.2s;
+}
+
+.story-body {
+  font-size: 1.05rem;
+  line-height: 2;
+  color: var(--warm-gray);
+  max-width: 650px;
+  margin: 0 auto;
+  opacity: 0; transform: translateY(20px);
+}
+
+.story-body.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33, 1, 0.68, 1) 0.15s;
+}
+
+/* ============================================
+   HORIZONTAL TIMELINE
+   ============================================ */
+.timeline-section {
+  padding: 6rem 0;
+  background: var(--warm-dark);
+  overflow: hidden;
+  position: relative;
+}
+
+.timeline-header {
+  padding: 0 4rem;
+  margin-bottom: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.timeline-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  color: white;
+}
+
+.timeline-heading em {
+  font-style: italic;
+  color: var(--orange);
+}
+
+.timeline-arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.timeline-arrow {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.timeline-arrow:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(232,134,58,0.1);
+}
+
+/* The horizontal scrolling line */
+.timeline-line-wrap {
+  position: relative;
+  padding: 0 4rem;
+  margin-bottom: 3rem;
+}
+
+.timeline-line {
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.timeline-line::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: 0;
+  width: 7px; height: 7px;
+  background: var(--orange);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(232,134,58,0.4);
+}
+
+.timeline-track-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 4rem 2rem;
+}
+
+.timeline-track-wrapper::-webkit-scrollbar { display: none; }
+
+.timeline-track {
+  display: flex;
+  gap: 2rem;
+  min-width: max-content;
+}
+
+.timeline-card {
+  min-width: 320px;
+  max-width: 320px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 2.5rem;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.5s ease;
+}
+
+.timeline-card:hover {
+  border-color: rgba(232,134,58,0.3);
+  background: rgba(255,255,255,0.06);
+  transform: translateY(-4px);
+}
+
+.timeline-year {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 3.5rem;
+  color: var(--orange);
+  opacity: 0.2;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.timeline-card:hover .timeline-year {
+  opacity: 0.5;
+  transition: opacity 0.5s ease;
+}
+
+.timeline-milestone {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 0.8rem;
+}
+
+.timeline-desc {
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.65);
+}
+
+/* ============================================
+   VALUES SECTION
+   ============================================ */
+.values {
+  padding: 8rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.values-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0; transform: translateY(30px);
+}
+
+.values-header.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.values-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  margin-bottom: 1rem;
+}
+
+.values-sub {
+  font-size: 1rem;
+  color: var(--warm-gray);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.value-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(28,25,23,0.04);
+  opacity: 0; transform: translateY(30px);
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.value-card.revealed {
+  opacity: 1; transform: translateY(0);
+}
+
+.value-card:nth-child(2).revealed { transition-delay: 0.1s; }
+.value-card:nth-child(3).revealed { transition-delay: 0.2s; }
+
+.value-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(28,25,23,0.08);
+}
+
+.value-number {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 4rem;
+  color: var(--orange);
+  opacity: 0.08;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.value-icon {
+  width: 52px; height: 52px;
+  background: var(--orange-soft);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  transition: background 0.4s ease;
+}
+
+.value-card:hover .value-icon {
+  background: var(--orange-glow);
+}
+
+.value-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 0.8rem;
+  color: var(--warm-dark);
+}
+
+.value-desc {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--warm-gray);
+}
+
+/* ============================================
+   TEAM / FOUNDER SECTION
+   ============================================ */
+.founder {
+  padding: 6rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.founder-content {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 5rem;
+  align-items: center;
+  background: white;
+  border-radius: 28px;
+  padding: 3.5rem;
+  box-shadow: 0 8px 32px rgba(28,25,23,0.05);
+  opacity: 0; transform: translateY(30px);
+}
+
+.founder-content.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.founder-photo {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 3/4;
+  position: relative;
+}
+
+.founder-photo-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.founder-photo::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(28,25,23,0.3), transparent);
+}
+
+.founder-info {
+  padding: 1rem 0;
+}
+
+.founder-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2rem;
+  margin-bottom: 0.3rem;
+}
+
+.founder-role {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--orange-text);
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.founder-quote {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: var(--warm-dark);
+  margin-bottom: 2rem;
+  padding-right: 1.5rem;
+  border-right: 3px solid var(--orange);
+}
+
+.founder-bio {
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: var(--warm-gray);
+}
+
+/* ============================================
+   STATS BAND
+   ============================================ */
+.stats-band {
+  margin: 0 4rem;
+  padding: 4rem;
+  background: linear-gradient(135deg, var(--warm-dark) 0%, #2C2420 100%);
+  border-radius: 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-band::before {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,134,58,0.1) 0%, transparent 70%);
+  top: -200px; left: -100px;
+  pointer-events: none;
+}
+
+.stat-item {
+  padding: 1rem;
+  opacity: 0; transform: translateY(20px);
+}
+
+.stat-item.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.stat-item:nth-child(2).revealed { transition-delay: 0.1s; }
+.stat-item:nth-child(3).revealed { transition-delay: 0.2s; }
+.stat-item:nth-child(4).revealed { transition-delay: 0.3s; }
+
+.stat-number {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  color: white;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-number span { color: var(--orange); }
+
+.stat-label {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.5;
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+.cta-section {
+  padding: 8rem 4rem;
+  text-align: center;
+}
+
+.cta-inner {
+  max-width: 650px;
+  margin: 0 auto;
+  opacity: 0; transform: translateY(30px);
+}
+
+.cta-inner.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.cta-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.cta-heading em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--orange-text);
+}
+
+.cta-sub {
+  font-size: 1rem;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 1.1rem 2.8rem;
+  background: var(--orange);
+  color: var(--warm-dark);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 4px 24px rgba(232, 134, 58, 0.3);
+}
+
+.btn-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(232, 134, 58, 0.4);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  background: var(--warm-dark);
+  padding: 4rem;
+  border-radius: 28px 28px 0 0;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 2rem;
+}
+
+.footer-brand-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footer-brand-desc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.7;
+  max-width: 300px;
+}
+
+.footer-col-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1.2rem;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-col a {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.footer-col a:hover { color: var(--orange); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.2);
+}
+
+.footer-social { display: flex; gap: 1rem; }
+
+.footer-social a {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(232,134,58,0.1);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .page-hero { grid-template-columns: 1fr; padding: 9rem 2.5rem 4rem; gap: 2.5rem; }
+  .page-hero-image { order: -1; }
+  .values-grid { grid-template-columns: 1fr; max-width: 450px; margin: 0 auto; }
+  .founder-content { grid-template-columns: 1fr; padding: 2.5rem; }
+  .founder-photo { max-width: 300px; }
+  .stats-band { grid-template-columns: repeat(2, 1fr); margin: 0 2.5rem; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .nav { padding: 1.2rem 2rem; }
+  .timeline-header { padding: 0 2.5rem; }
+  .timeline-line-wrap { padding: 0 2.5rem; }
+  .timeline-track-wrapper { padding: 0 2.5rem 2rem; }
+  .cursor-dot, .cursor-ring { display: none; }
+}
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .page-hero { padding: 8rem 2rem 3rem; }
+  .page-hero-heading { font-size: clamp(2rem, 8vw, 3rem); }
+  .story { padding: 5rem 2rem; }
+  .values { padding: 5rem 2rem; }
+  .founder { padding: 4rem 2rem; }
+  .founder-content { gap: 2rem; }
+  .stats-band { grid-template-columns: 1fr; margin: 0 2rem; padding: 3rem 2rem; }
+  .cta-section { padding: 5rem 2rem; }
+  .footer { padding: 3rem 2rem; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+  .timeline-card { min-width: 280px; max-width: 280px; }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .page-hero-text, .page-hero-image {
+    opacity: 1 !important; transform: none !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<!-- NAV -->
+<div id="site-header"></div>
+
+<!-- PAGE HERO -->
+<section class="page-hero" id="main-content" aria-labelledby="about-hero-heading">
+  <div class="page-hero-text">
+    <div class="section-tag">
+      <span class="section-tag-dot" aria-hidden="true"></span>
+      הסיפור שלנו
+    </div>
+    <h1 class="page-hero-heading" id="about-hero-heading">
+      התחלנו עם שיחה<br>
+      אחת. <em>פשוטה.</em>
+    </h1>
+    <p class="page-hero-lead">
+      ב-2010, כשכל ספק תקשורת דיבר על תכונות וחבילות,
+      שאלנו שאלה אחרת — מה באמת צריך עסק ישראלי
+      כדי להישמע מקצועי? התשובה הפתיעה אותנו.
+    </p>
+  </div>
+  <div class="page-hero-image" aria-hidden="true">
+    <div class="page-hero-img-wrap">
+      <div class="page-hero-img"></div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="story" aria-label="הסיפור שלנו">
+  <blockquote class="story-quote" data-reveal>
+    "גילינו שעסקים לא צריכים עוד מרכזייה.<br>
+    הם צריכים מישהו שידאג שכל שיחה נענית,<br>
+    <strong>כל לקוח מרגיש חשוב.</strong>"
+  </blockquote>
+  <div class="story-divider" data-reveal></div>
+  <p class="story-body" data-reveal>
+    מה שהתחיל כפרויקט קטן של <span lang="en">Marketools</span> הפך לאחת מחברות
+    התקשורת העסקית הוותיקות בישראל. לא בגלל שהיינו הגדולים
+    ביותר — אלא בגלל שלקוחות פשוט לא עזבו. כי כשמשהו עובד
+    באמת, אין סיבה לחפש משהו אחר. היום, אחרי יותר מ-15 שנה
+    ומאות לקוחות, העיקרון לא השתנה: תקשורת עסקית צריכה
+    פשוט לעבוד. בשקט, ברקע, בלי שחושבים עליה.
+  </p>
+</section>
+
+<!-- HORIZONTAL TIMELINE -->
+<section class="timeline-section" aria-labelledby="timeline-heading">
+  <div class="timeline-header">
+    <h2 class="timeline-heading" id="timeline-heading">
+      המסע<br><em>שלנו</em>
+    </h2>
+    <div class="timeline-arrows">
+      <button class="timeline-arrow" id="tlPrev" aria-label="הצג פריט קודם בציר הזמן">→</button>
+      <button class="timeline-arrow" id="tlNext" aria-label="הצג פריט הבא בציר הזמן">←</button>
+    </div>
+  </div>
+  <div class="timeline-line-wrap">
+    <div class="timeline-line"></div>
+  </div>
+  <div class="timeline-track-wrapper" id="timelineWrapper" role="region" aria-label="ציר הזמן של Qualia" tabindex="0">
+    <div class="timeline-track">
+      <div class="timeline-card">
+        <div class="timeline-year">2010</div>
+        <div class="timeline-milestone">ההתחלה</div>
+        <div class="timeline-desc">
+          <span lang="en">Marketools</span> מקימה את <span lang="en">Qualia</span> כפרויקט פנימי — מספרים
+          וירטואליים לעסקים קטנים שרוצים להישמע גדול.
+        </div>
+      </div>
+      <div class="timeline-card">
+        <div class="timeline-year">2013</div>
+        <div class="timeline-milestone">המעבר לענן</div>
+        <div class="timeline-desc">
+          השקת מרכזיית ה-IP בענן. לקוחות מקבלים לראשונה ניהול שלוחות,
+          הקלטות ודשבורד — ללא חומרה.
+        </div>
+      </div>
+      <div class="timeline-card">
+        <div class="timeline-year">2016</div>
+        <div class="timeline-milestone">שירות אנושי</div>
+        <div class="timeline-desc">
+          הוספת שירות מענה אנושי. מזכירה וירטואלית שעונה בשם
+          העסק של הלקוח — הרעיון שמשנה הכל.
+        </div>
+      </div>
+      <div class="timeline-card">
+        <div class="timeline-year">2019</div>
+        <div class="timeline-milestone">100 לקוחות</div>
+        <div class="timeline-desc">
+          חוצים את רף 100 הלקוחות. שיעור נטישה כמעט אפסי.
+          מתחילים לקבל לקוחות רק מפה לאוזן.
+        </div>
+      </div>
+      <div class="timeline-card">
+        <div class="timeline-year">2021</div>
+        <div class="timeline-milestone">קורונה = צמיחה</div>
+        <div class="timeline-desc">
+          המעבר לעבודה מרחוק הופך את הפתרונות שלנו לחיוניים.
+          הביקוש מוכפל. המערכות עומדות בעומס.
+        </div>
+      </div>
+      <div class="timeline-card">
+        <div class="timeline-year">2024</div>
+        <div class="timeline-milestone">דור חדש</div>
+        <div class="timeline-desc">
+          השקת הפלטפורמה המחודשת. ממשק ניהול חדש,
+          אינטגרציות מתקדמות, ואותו שירות אנושי
+          שתמיד הגדיר אותנו.
+        </div>
+      </div>
+      <div class="timeline-card">
+        <div class="timeline-year">2025</div>
+        <div class="timeline-milestone">500+ לקוחות</div>
+        <div class="timeline-desc">
+          יותר מ-500 עסקים סומכים עלינו.
+          ההבטחה לא השתנתה — תקשורת שפשוט עובדת.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values" aria-labelledby="values-heading">
+  <div class="values-header" data-reveal>
+    <div class="section-tag" style="justify-content: center;">
+      <span class="section-tag-dot" aria-hidden="true"></span>
+      מה מנחה אותנו
+    </div>
+    <h2 class="values-heading" id="values-heading">העקרונות שלנו</h2>
+    <p class="values-sub">
+      שלושה דברים שלא השתנו מהיום הראשון — ולא ישתנו.
+    </p>
+  </div>
+  <div class="values-grid">
+    <div class="value-card" data-reveal>
+      <div class="value-number">01</div>
+      <div class="value-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3 class="value-title">שירות אנושי, תמיד</h3>
+      <p class="value-desc">
+        לא בוטים, לא תפריטים אינסופיים. כשמתקשרים אלינו,
+        בן אדם אמיתי עונה. בן אדם שמכיר את המערכת שלך.
+      </p>
+    </div>
+    <div class="value-card" data-reveal>
+      <div class="value-number">02</div>
+      <div class="value-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <h3 class="value-title">פשטות בלי פשרות</h3>
+      <p class="value-desc">
+        טכנולוגיה מתקדמת לא חייבת להיות מסובכת. המערכות
+        שלנו חזקות מבפנים ופשוטות מבחוץ.
+      </p>
+    </div>
+    <div class="value-card" data-reveal>
+      <div class="value-number">03</div>
+      <div class="value-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22V12"/><path d="M12 12C12 7 17 4 21 6c0 4-3 7-9 6z"/><path d="M12 12C12 7 7 4 3 6c0 4 3 7 9 6z"/></svg></div>
+      <h3 class="value-title">צמיחה יחד</h3>
+      <p class="value-desc">
+        לא מוכרים חבילות — בונים פתרונות. המערכת גדלה
+        עם העסק שלך, בלי שתרגיש את השינוי.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section class="founder" aria-labelledby="founder-heading">
+  <div class="founder-content" data-reveal>
+    <div class="founder-photo">
+      <img src="founder-portrait.png" alt="תמונת המייסד" class="founder-photo-img">
+    </div>
+    <div class="founder-info">
+      <div class="section-tag">
+        <span class="section-tag-dot" aria-hidden="true"></span>
+        המייסד
+      </div>
+      <h3 class="founder-name" id="founder-heading">השם של המייסד</h3>
+      <div class="founder-role">מייסד ומנכ״ל, <span lang="en">Qualia</span></div>
+      <blockquote class="founder-quote">
+        "רציתי ליצור חברת תקשורת שאני בעצמי הייתי רוצה
+        לעבוד איתה. כזו שעונה לטלפון, מבינה מה צריך,
+        ופשוט עושה את העבודה."
+      </blockquote>
+      <p class="founder-bio">
+        עם רקע של יותר מעשור בעולם הטלקום הישראלי,
+        הקים את <span lang="en">Qualia</span> מתוך תסכול אישי — מספיק לשירות
+        שלא עונה, למערכות שלא עובדות, ולחוזים שלא
+        מתאימים. היום, <span lang="en">Qualia</span> משרתת מאות עסקים עם
+        הגישה הפשוטה הזו: תהיה שם, תעשה טוב.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAND -->
+<section class="stats-band" aria-label="נתונים מספריים">
+  <div class="stat-item" data-reveal>
+    <div class="stat-number">15<span>+</span></div>
+    <div class="stat-label">שנים בשוק</div>
+  </div>
+  <div class="stat-item" data-reveal>
+    <div class="stat-number">500<span>+</span></div>
+    <div class="stat-label">לקוחות פעילים</div>
+  </div>
+  <div class="stat-item" data-reveal>
+    <div class="stat-number">99.9<span>%</span></div>
+    <div class="stat-label">זמינות מערכת</div>
+  </div>
+  <div class="stat-item" data-reveal>
+    <div class="stat-number">24<span>h</span></div>
+    <div class="stat-label">זמן הקמה</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" aria-labelledby="about-cta-heading">
+  <div class="cta-inner" data-reveal>
+    <h2 class="cta-heading" id="about-cta-heading">
+      רוצים להכיר<br><em>מקרוב?</em>
+    </h2>
+    <p class="cta-sub">
+      שיחה קצרה ונבין אם אנחנו מתאימים לעסק שלכם.
+      בלי לחץ, בלי מכירות — רק שיחה.
+    </p>
+    <a href="contact-page-design.html" class="btn-cta">בואו נדבר ←</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div id="site-footer"></div>
+
+<script>
+// CURSOR
+const dot = document.querySelector('.cursor-dot');
+const ring = document.querySelector('.cursor-ring');
+
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    dot.style.left = e.clientX - 5 + 'px';
+    dot.style.top = e.clientY - 5 + 'px';
+    ring.style.left = e.clientX - 20 + 'px';
+    ring.style.top = e.clientY - 20 + 'px';
+  });
+
+  document.querySelectorAll('a, button, .value-card, .timeline-card').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+} else {
+  dot.style.display = 'none';
+  ring.style.display = 'none';
+}
+
+// NAV SCROLL — lazy lookup so it works with deferred header injection
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('mainNav');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+// SCROLL REVEALS
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+// TIMELINE SCROLL
+const tlWrapper = document.getElementById('timelineWrapper');
+const tlPrev = document.getElementById('tlPrev');
+const tlNext = document.getElementById('tlNext');
+const scrollAmount = 350;
+
+tlNext.addEventListener('click', () => {
+  tlWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+});
+
+tlPrev.addEventListener('click', () => {
+  tlWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+});
+
+// SMOOTH ANCHORS
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>

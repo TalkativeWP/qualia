@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qualia — הבלוג</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Hebrew:wght@300;400;500;600;700&family=Noto+Serif+Hebrew:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="header-footer.js" defer></script>
+    <style>
+        :root {
+            --orange: #E8863A;
+            --orange-light: #F4A261;
+            --parchment: #FAF6F1;
+            --parchment-deep: #F3EDE4;
+            --warm-cream: #FFF8F0;
+            --sand: #E7DDD3;
+            --warm-dark: #1C1917;
+            --warm-brown: #44403C;
+            --warm-gray: #6B6460;
+            --orange-text: #C46820;
+            --terracotta: #C2703E;
+            --terracotta-light: #D4956A;
+            --sage: #87886E;
+            --sage-light: #A8A98E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Hebrew', 'DM Sans', sans-serif;
+            background: var(--parchment);
+            color: var(--warm-dark);
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* Custom cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--orange);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease, background 0.15s ease;
+            mix-blend-mode: exclusion;
+        }
+        .cursor.hover {
+            transform: scale(2.5);
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(250, 246, 241, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(231, 221, 211, 0.5);
+            transition: all 0.4s ease;
+        }
+
+        .logo {
+            font-family: 'Fraunces', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--warm-dark);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo span {
+            color: var(--orange);
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+        .header-nav a {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--warm-brown);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .header-nav a:hover {
+            color: var(--orange);
+        }
+
+        .header-cta {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--parchment) !important;
+            background: var(--warm-dark);
+            padding: 0.65rem 1.6rem;
+            border-radius: 100px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .header-cta:hover {
+            background: var(--orange);
+            color: #fff !important;
+        }
+
+        /* ============================================
+           ARCHIVE HERO — Featured Story
+           ============================================ */
+        .archive-hero {
+            padding: 10rem 4rem 4rem;
+            background: var(--parchment);
+            position: relative;
+        }
+
+        .archive-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(232, 134, 58, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(194, 112, 62, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .archive-title-block {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .archive-eyebrow {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--orange);
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .archive-heading {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 300;
+            color: var(--warm-dark);
+            line-height: 1.1;
+            margin-bottom: 1.2rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .archive-heading em {
+            font-style: italic;
+            color: var(--orange);
+            font-weight: 400;
+        }
+
+        .archive-subtitle {
+            font-family: 'Noto Serif Hebrew', serif;
+            font-size: 1.15rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.7;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        /* Featured Article — Magazine Spread */
+        .featured-story {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 0;
+            background: var(--warm-cream);
+            border-radius: 20px;
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 30px 80px rgba(28, 25, 23, 0.06);
+            opacity: 0;
+            transform: translateY(40px);
+            cursor: pointer;
+            transition: box-shadow 0.4s ease;
+        }
+        .featured-story:hover {
+            box-shadow: 0 40px 100px rgba(28, 25, 23, 0.1);
+        }
+
+        .featured-image {
+            position: relative;
+            overflow: hidden;
+            min-height: 480px;
+        }
+        .featured-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .featured-story:hover .featured-image img {
+            transform: scale(1.04);
+        }
+        .featured-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--orange);
+            color: #1C1917;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.5rem 1.2rem;
+            border-radius: 100px;
+        }
+
+        .featured-content {
+            padding: 3.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .featured-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .featured-category {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--terracotta);
+        }
+        .featured-date {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            color: var(--warm-gray);
+        }
+        .featured-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.8rem, 3vw, 2.4rem);
+            font-weight: 400;
+            line-height: 1.25;
+            color: var(--warm-dark);
+            margin-bottom: 1.2rem;
+        }
+        .featured-excerpt {
+            font-family: 'Noto Serif Hebrew', serif;
+            font-size: 1rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: var(--warm-brown);
+            margin-bottom: 2rem;
+        }
+        .featured-read {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--orange-text);
+            text-decoration: none;
+            transition: gap 0.3s ease;
+        }
+        .featured-read:hover {
+            gap: 1rem;
+        }
+        .featured-read svg {
+            width: 18px;
+            height: 18px;
+            transform: scaleX(-1); /* RTL arrow */
+            transition: transform 0.3s ease;
+        }
+
+        /* ============================================
+           CATEGORY FILTER — Magazine Sections
+           ============================================ */
+        .category-filter {
+            padding: 3rem 4rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .filter-track {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .filter-pill {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 400;
+            color: var(--warm-brown);
+            background: transparent;
+            border: 1.5px solid var(--sand);
+            padding: 0.55rem 1.4rem;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .filter-pill:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+        .filter-pill.active {
+            background: var(--warm-dark);
+            border-color: var(--warm-dark);
+            color: var(--parchment);
+        }
+
+        .filter-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--sand);
+            margin: 0 0.5rem;
+        }
+
+        /* ============================================
+           ARTICLE GRID — Editorial Masonry
+           ============================================ */
+        .articles-section {
+            padding: 3rem 4rem 6rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        /* Card sizes — magazine layout variety */
+        .article-card {
+            background: var(--warm-cream);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(28, 25, 23, 0.08);
+        }
+
+        /* Large card — spans 2 columns */
+        .article-card.large {
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .article-card.large .card-image {
+            min-height: 340px;
+        }
+        .article-card.large .card-body {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .article-card.large .card-title {
+            font-size: 1.6rem;
+        }
+
+        /* Standard card — single column */
+        .article-card.standard .card-image {
+            height: 220px;
+        }
+        .article-card.standard .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Minimal card — text only, no image */
+        .article-card.minimal {
+            background: var(--parchment-deep);
+            border: 1.5px solid var(--sand);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 300px;
+        }
+        .article-card.minimal .card-category {
+            margin-bottom: auto;
+        }
+        .article-card.minimal .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .article-card.minimal:hover {
+            border-color: var(--orange);
+            background: var(--warm-cream);
+        }
+
+        /* Quote card — pull quote style */
+        .article-card.quote-card {
+            background: var(--warm-dark);
+            color: var(--parchment);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 300px;
+            position: relative;
+        }
+        .article-card.quote-card::before {
+            content: '\201D';
+            font-family: 'Fraunces', serif;
+            font-size: 8rem;
+            color: var(--orange);
+            opacity: 0.3;
+            position: absolute;
+            top: -1rem;
+            right: 1.5rem;
+            line-height: 1;
+        }
+        .article-card.quote-card .card-title {
+            color: var(--parchment);
+            font-style: italic;
+        }
+        .article-card.quote-card .card-category {
+            color: var(--orange);
+        }
+        .article-card.quote-card .card-date {
+            color: var(--sand);
+        }
+
+        .card-image {
+            overflow: hidden;
+            position: relative;
+        }
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .article-card:hover .card-image img {
+            transform: scale(1.06);
+        }
+
+        .card-category {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--terracotta);
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .card-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            line-height: 1.35;
+            color: var(--warm-dark);
+            margin-bottom: 0.8rem;
+        }
+
+        .card-excerpt {
+            font-family: 'Noto Serif Hebrew', serif;
+            font-size: 0.9rem;
+            font-weight: 300;
+            line-height: 1.7;
+            color: var(--warm-gray);
+            margin-bottom: 1.2rem;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+        .card-date {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            color: var(--warm-gray);
+        }
+        .card-read-time {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            color: var(--sage);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* ============================================
+           NEWSLETTER BAND — Mid-Grid Interrupt
+           ============================================ */
+        .newsletter-band {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--warm-dark) 0%, #2C2521 100%);
+            border-radius: 20px;
+            padding: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .newsletter-band::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(232, 134, 58, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .newsletter-text h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: var(--parchment);
+            margin-bottom: 0.6rem;
+        }
+        .newsletter-text p {
+            font-family: 'Noto Serif Hebrew', serif;
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: var(--sand);
+            line-height: 1.6;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 0.8rem;
+            flex-shrink: 0;
+        }
+        .newsletter-input {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.85rem 1.5rem;
+            border: 1.5px solid rgba(231, 221, 211, 0.2);
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--parchment);
+            width: 280px;
+            outline: none;
+            direction: rtl;
+            transition: border-color 0.3s ease;
+        }
+        .newsletter-input::placeholder {
+            color: rgba(231, 221, 211, 0.4);
+        }
+        .newsletter-input:focus {
+            border-color: var(--orange);
+        }
+        .newsletter-btn {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.85rem 2rem;
+            border: none;
+            border-radius: 100px;
+            background: var(--orange);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .newsletter-btn:hover {
+            background: var(--orange-light);
+            transform: translateY(-1px);
+        }
+
+        /* ============================================
+           LOAD MORE
+           ============================================ */
+        .load-more-wrap {
+            text-align: center;
+            padding: 2rem 0 4rem;
+        }
+        .load-more-btn {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--warm-dark);
+            background: transparent;
+            border: 1.5px solid var(--warm-dark);
+            padding: 0.9rem 3rem;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .load-more-btn:hover {
+            background: var(--warm-dark);
+            color: var(--parchment);
+        }
+
+        /* ============================================
+           TOPICS SIDEBAR — Floating
+           ============================================ */
+        .topics-footer {
+            background: var(--parchment-deep);
+            padding: 5rem 4rem;
+            border-top: 1px solid var(--sand);
+        }
+
+        .topics-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .topics-heading {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--warm-dark);
+            margin-bottom: 0.8rem;
+        }
+        .topics-sub {
+            font-family: 'Noto Serif Hebrew', serif;
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            line-height: 1.7;
+        }
+
+        .topics-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+        }
+        .topic-tag {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--warm-brown);
+            background: var(--warm-cream);
+            border: 1px solid var(--sand);
+            padding: 0.6rem 1.3rem;
+            border-radius: 100px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .topic-tag:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+            background: rgba(232, 134, 58, 0.05);
+        }
+        .topic-tag .count {
+            font-size: 0.72rem;
+            color: var(--warm-gray);
+            margin-right: 0.4rem;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .site-footer {
+            background: var(--warm-dark);
+            color: var(--sand);
+            padding: 4rem;
+        }
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--parchment);
+        }
+        .footer-logo span {
+            color: var(--orange);
+        }
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .footer-links a {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            font-size: 0.82rem;
+            color: var(--sand);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover {
+            color: var(--orange);
+        }
+        .footer-copy {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            color: var(--warm-gray);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .site-header {
+                padding: 1.2rem 2rem;
+            }
+            .archive-hero {
+                padding: 8rem 2rem 3rem;
+            }
+            .featured-story {
+                grid-template-columns: 1fr;
+            }
+            .featured-image {
+                min-height: 300px;
+            }
+            .featured-content {
+                padding: 2.5rem;
+            }
+            .category-filter {
+                padding: 2rem 2rem 0.5rem;
+            }
+            .articles-section {
+                padding: 2rem;
+            }
+            .articles-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .article-card.large {
+                grid-column: span 2;
+            }
+            .newsletter-band {
+                flex-direction: column;
+                text-align: center;
+                padding: 3rem 2rem;
+            }
+            .newsletter-form {
+                flex-direction: column;
+                width: 100%;
+                align-items: center;
+            }
+            .newsletter-input {
+                width: 100%;
+                max-width: 360px;
+            }
+            .topics-inner {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body { cursor: auto; }
+            .cursor { display: none; }
+
+            .site-header {
+                padding: 1rem 1.2rem;
+            }
+            .header-nav a:not(.header-cta) {
+                display: none;
+            }
+            .archive-hero {
+                padding: 7rem 1.2rem 2rem;
+            }
+            .archive-heading {
+                font-size: 2.4rem;
+            }
+            .featured-content {
+                padding: 1.5rem;
+            }
+            .featured-title {
+                font-size: 1.4rem;
+            }
+            .category-filter {
+                padding: 1.5rem 1.2rem 0.5rem;
+            }
+            .filter-track {
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding-bottom: 0.5rem;
+            }
+            .filter-track::-webkit-scrollbar {
+                display: none;
+            }
+            .filter-divider {
+                display: none;
+            }
+            .articles-section {
+                padding: 1.5rem 1.2rem 4rem;
+            }
+            .articles-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+            .article-card.large {
+                grid-column: span 1;
+                grid-template-columns: 1fr;
+            }
+            .article-card.large .card-image {
+                min-height: 200px;
+            }
+            .article-card.large .card-body {
+                padding: 1.5rem;
+            }
+            .article-card.large .card-title {
+                font-size: 1.3rem;
+            }
+            .topics-footer {
+                padding: 3rem 1.2rem;
+            }
+            .footer-inner {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @media (prefers-reduced-motion: no-preference) {
+            .reveal {
+                opacity: 0;
+                transform: translateY(40px);
+                transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                            transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .reveal.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .reveal,
+            .archive-eyebrow,
+            .archive-heading,
+            .archive-subtitle,
+            .featured-story,
+            .article-card,
+            .filter-track,
+            .newsletter-band {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* Stagger delays for grid cards */
+        .article-card:nth-child(1) { transition-delay: 0s; }
+        .article-card:nth-child(2) { transition-delay: 0.08s; }
+        .article-card:nth-child(3) { transition-delay: 0.16s; }
+        .article-card:nth-child(4) { transition-delay: 0.24s; }
+        .article-card:nth-child(5) { transition-delay: 0.32s; }
+        .article-card:nth-child(6) { transition-delay: 0.4s; }
+
+        /* Grain overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+
+    <!-- Header -->
+    <div id="site-header"></div>
+
+    <!-- Archive Hero — Featured Story -->
+    <section class="archive-hero" id="main-content" aria-labelledby="archive-heading">
+        <div class="archive-title-block">
+            <span class="archive-eyebrow">הבלוג של <span lang="en">Qualia</span></span>
+            <h1 class="archive-heading" id="archive-heading">תובנות, <em>מגמות</em> וידע</h1>
+            <p class="archive-subtitle">מאמרים שנכתבו כדי לעזור לכם לקבל החלטות חכמות יותר בעולם התקשורת העסקית</p>
+        </div>
+
+        <article class="featured-story">
+            <div class="featured-image">
+                <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop&crop=center" alt="מערכות טלפוניה מבוססות ענן">
+                <span class="featured-badge">מאמר מומלץ</span>
+            </div>
+            <div class="featured-content">
+                <div class="featured-meta">
+                    <span class="featured-category">מערכות טלפוניה</span>
+                    <span class="featured-date">17 במרץ, 2026</span>
+                </div>
+                <h2 class="featured-title">למה עסקים מובילים עוברים למערכות טלפוניה מבוססות ענן ב-2026</h2>
+                <p class="featured-excerpt">המעבר לענן כבר לא שאלה של אם, אלא של מתי. סקירה מעמיקה של היתרונות, האתגרים, והצעדים הראשונים שכל עסק צריך לעשות.</p>
+                <a href="#" class="featured-read">
+                    קראו את המאמר
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </article>
+    </section>
+
+    <!-- Category Filter -->
+    <div class="category-filter">
+        <div class="filter-track">
+            <button class="filter-pill active">הכל</button>
+            <div class="filter-divider"></div>
+            <button class="filter-pill">מערכות טלפוניה</button>
+            <button class="filter-pill">מספרים וירטואליים</button>
+            <button class="filter-pill">שירותי מענה</button>
+            <button class="filter-pill">טיפים לעסקים</button>
+            <button class="filter-pill">חדשות החברה</button>
+            <button class="filter-pill">מדריכים</button>
+        </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <section class="articles-section">
+        <div class="articles-grid">
+
+            <!-- Large Card -->
+            <article class="article-card large">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop" alt="Article">
+                </div>
+                <div class="card-body">
+                    <span class="card-category">מדריכים</span>
+                    <h3 class="card-title">המדריך המלא לבחירת מערכת טלפוניה לעסק קטן ובינוני</h3>
+                    <p class="card-excerpt">כל מה שצריך לדעת לפני שמקבלים החלטה — מ-PBX מסורתי ועד פתרונות ענן מתקדמים, בשפה פשוטה.</p>
+                    <div class="card-footer">
+                        <span class="card-date">14 במרץ, 2026</span>
+                        <span class="card-read-time">8 דק׳ קריאה</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Standard Card -->
+            <article class="article-card standard">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1521898284481-a5ec348cb555?w=400&h=280&fit=crop" alt="Article">
+                </div>
+                <div class="card-body">
+                    <span class="card-category">מספרים וירטואליים</span>
+                    <h3 class="card-title">5 סיבות לקחת מספר וירטואלי לעסק שלכם</h3>
+                    <div class="card-footer">
+                        <span class="card-date">11 במרץ</span>
+                        <span class="card-read-time">4 דק׳</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Standard Card -->
+            <article class="article-card standard">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=400&h=280&fit=crop" alt="Article">
+                </div>
+                <div class="card-body">
+                    <span class="card-category">טיפים לעסקים</span>
+                    <h3 class="card-title">איך להפוך כל שיחה נכנסת להזדמנות מכירה</h3>
+                    <div class="card-footer">
+                        <span class="card-date">8 במרץ</span>
+                        <span class="card-read-time">5 דק׳</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Minimal Card (text-only) -->
+            <article class="article-card minimal">
+                <span class="card-category">שירותי מענה</span>
+                <div>
+                    <h3 class="card-title">מענה אנושי מול מענה אוטומטי: מה באמת מתאים לעסק שלכם?</h3>
+                    <p class="card-excerpt">השוואה מעמיקה שתחסוך לכם טעויות יקרות.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-date">5 במרץ, 2026</span>
+                    <span class="card-read-time">6 דק׳</span>
+                </div>
+            </article>
+
+            <!-- Quote Card -->
+            <article class="article-card quote-card">
+                <span class="card-category">חדשות החברה</span>
+                <h3 class="card-title">השירות שלהם פשוט ברמה אחרת. מרגישים שיש מי שדואג לך.</h3>
+                <div class="card-footer">
+                    <span class="card-date">— דנה כ., מנכ״לית</span>
+                </div>
+            </article>
+
+            <!-- Newsletter Band — Mid-Grid Interrupt -->
+            <div class="newsletter-band">
+                <div class="newsletter-text">
+                    <h3>הישארו מעודכנים</h3>
+                    <p>תובנות חדשות ישירות למייל, בלי ספאם. פעם בשבועיים, מקסימום.</p>
+                </div>
+                <form class="newsletter-form" onsubmit="event.preventDefault()">
+                    <input type="email" class="newsletter-input" placeholder="הכניסו את המייל שלכם">
+                    <button type="submit" class="newsletter-btn">הרשמה</button>
+                </form>
+            </div>
+
+            <!-- Standard Card -->
+            <article class="article-card standard">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=280&fit=crop" alt="Article">
+                </div>
+                <div class="card-body">
+                    <span class="card-category">מערכות טלפוניה</span>
+                    <h3 class="card-title">SIP Trunk מול קווים מסורתיים: השוואת עלויות אמיתית</h3>
+                    <div class="card-footer">
+                        <span class="card-date">1 במרץ</span>
+                        <span class="card-read-time">7 דק׳</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Large Card -->
+            <article class="article-card large">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=600&h=400&fit=crop" alt="Article">
+                </div>
+                <div class="card-body">
+                    <span class="card-category">מדריכים</span>
+                    <h3 class="card-title">הקמת מוקד שירות טלפוני: מאפס ועד למוקד פעיל ב-30 יום</h3>
+                    <p class="card-excerpt">צעד אחר צעד — מבחירת הציוד ועד הכשרת הנציגים. המדריך שהלוואי שהיה לנו כשהתחלנו.</p>
+                    <div class="card-footer">
+                        <span class="card-date">25 בפברואר, 2026</span>
+                        <span class="card-read-time">12 דק׳ קריאה</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Minimal Card -->
+            <article class="article-card minimal">
+                <span class="card-category">טיפים לעסקים</span>
+                <div>
+                    <h3 class="card-title">7 טעויות נפוצות בשירות לקוחות טלפוני — ואיך לתקן אותן</h3>
+                    <p class="card-excerpt">הטעויות שעולות לכם בלקוחות, בלי שאתם יודעים.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="card-date">20 בפברואר</span>
+                    <span class="card-read-time">5 דק׳</span>
+                </div>
+            </article>
+
+            <!-- Standard Card -->
+            <article class="article-card standard">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&h=280&fit=crop" alt="Article">
+                </div>
+                <div class="card-body">
+                    <span class="card-category">מספרים וירטואליים</span>
+                    <h3 class="card-title">מספר 1-800 בישראל: כל מה שצריך לדעת</h3>
+                    <div class="card-footer">
+                        <span class="card-date">15 בפברואר</span>
+                        <span class="card-read-time">4 דק׳</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Standard Card -->
+            <article class="article-card standard">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=280&fit=crop" alt="Article">
+                </div>
+                <div class="card-body">
+                    <span class="card-category">חדשות החברה</span>
+                    <h3 class="card-title"><span lang="en">Qualia</span> משיקה פתרון חדש לעסקים בינלאומיים</h3>
+                    <div class="card-footer">
+                        <span class="card-date">10 בפברואר</span>
+                        <span class="card-read-time">3 דק׳</span>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="load-more-wrap">
+            <button class="load-more-btn">טענו עוד מאמרים</button>
+        </div>
+    </section>
+
+    <!-- Topics Cloud -->
+    <section class="topics-footer reveal" aria-labelledby="topics-heading">
+        <div class="topics-inner">
+            <div>
+                <h2 class="topics-heading" id="topics-heading">נושאים</h2>
+                <p class="topics-sub">חפשו לפי תחום העניין שלכם</p>
+            </div>
+            <div class="topics-cloud">
+                <a href="#" class="topic-tag">מערכות טלפוניה <span class="count">(12)</span></a>
+                <a href="#" class="topic-tag">מספרים וירטואליים <span class="count">(8)</span></a>
+                <a href="#" class="topic-tag">שירותי מענה <span class="count">(6)</span></a>
+                <a href="#" class="topic-tag">VoIP <span class="count">(9)</span></a>
+                <a href="#" class="topic-tag">שירות לקוחות <span class="count">(11)</span></a>
+                <a href="#" class="topic-tag">אוטומציה <span class="count">(5)</span></a>
+                <a href="#" class="topic-tag">SIP Trunk <span class="count">(4)</span></a>
+                <a href="#" class="topic-tag">מוקדי שירות <span class="count">(7)</span></a>
+                <a href="#" class="topic-tag">עסקים קטנים <span class="count">(10)</span></a>
+                <a href="#" class="topic-tag">אבטחת מידע <span class="count">(3)</span></a>
+                <a href="#" class="topic-tag">חוויית לקוח <span class="count">(6)</span></a>
+                <a href="#" class="topic-tag">עבודה מרחוק <span class="count">(5)</span></a>
+                <a href="#" class="topic-tag">טכנולוגיה <span class="count">(8)</span></a>
+                <a href="#" class="topic-tag">מדריכים <span class="count">(14)</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="site-footer"></div>
+
+    <script>
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        if (cursor) {
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX - 10 + 'px';
+                cursor.style.top = e.clientY - 10 + 'px';
+            });
+            document.querySelectorAll('a, button, .article-card, .filter-pill, .topic-tag').forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+            });
+        }
+
+        // Scroll reveals
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -60px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe hero elements with stagger
+        const heroElements = [
+            document.querySelector('.archive-eyebrow'),
+            document.querySelector('.archive-heading'),
+            document.querySelector('.archive-subtitle'),
+            document.querySelector('.featured-story'),
+        ];
+        heroElements.forEach((el, i) => {
+            if (el) {
+                el.style.transition = `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.15}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.15}s`;
+                observer.observe(el);
+            }
+        });
+
+        // Observe filter track
+        const filterTrack = document.querySelector('.filter-track');
+        if (filterTrack) observer.observe(filterTrack);
+
+        // Observe article cards
+        document.querySelectorAll('.article-card').forEach((card, i) => {
+            card.style.transitionDelay = `${i * 0.08}s`;
+            observer.observe(card);
+        });
+
+        // Observe newsletter band
+        const newsletter = document.querySelector('.newsletter-band');
+        if (newsletter) observer.observe(newsletter);
+
+        // Observe reveal elements
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Filter pills interaction
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+            });
+        });
+
+        // Parallax on featured image
+        const featuredStory = document.querySelector('.featured-story');
+        if (featuredStory) {
+            const featuredImg = featuredStory.querySelector('.featured-image img');
+            window.addEventListener('scroll', () => {
+                const rect = featuredStory.getBoundingClientRect();
+                const scrollPercent = rect.top / window.innerHeight;
+                if (featuredImg && scrollPercent > -1 && scrollPercent < 1) {
+                    featuredImg.style.transform = `scale(1.04) translateY(${scrollPercent * 20}px)`;
+                }
+            }, { passive: true });
+        }
+    </script>
+</body>
+</html>

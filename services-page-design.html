@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qualia — השירותים שלנו</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500&family=Noto+Serif+Hebrew:wght@300;600;900&family=Noto+Sans+Hebrew:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="header-footer.js" defer></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange: #E8863A;
+  --orange-glow: rgba(232, 134, 58, 0.2);
+  --orange-soft: rgba(232, 134, 58, 0.08);
+  --parchment: #FAF6F1;
+  --sand: #E7DDD3;
+  --stone: #C4977A;
+  --warm-dark: #1C1917;
+  --warm-gray: #6B6460;
+  --warm-light: #D6CEC6;
+  --orange-text: #C46820;
+  --font-display: 'Fraunces', 'Noto Serif Hebrew', serif;
+  --font-body: 'DM Sans', 'Noto Sans Hebrew', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--parchment);
+  color: var(--warm-dark);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--orange); color: white; }
+
+.cursor-dot {
+  width: 10px; height: 10px; background: var(--orange); border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 10000;
+  transition: transform 0.15s ease; mix-blend-mode: exclusion;
+}
+
+.cursor-ring {
+  width: 40px; height: 40px; border: 1.5px solid var(--orange); border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 10000;
+  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+  transform: translate(-15px, -15px); opacity: 0.5;
+}
+
+.cursor-ring.hovering { width: 60px; height: 60px; transform: translate(-25px, -25px); opacity: 1; }
+
+/* NAV */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.8rem 3.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(250, 246, 241, 0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.nav.scrolled { padding: 1rem 3.5rem; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+
+.nav-logo { font-family: var(--font-display); font-weight: 900; font-size: 1.6rem; color: var(--warm-dark); text-decoration: none; }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+.nav-links a { font-size: 0.85rem; font-weight: 400; color: var(--warm-dark); text-decoration: none; position: relative; transition: color 0.3s; }
+.nav-links a::after { content: ''; position: absolute; bottom: -4px; right: 0; width: 0; height: 2px; background: var(--orange); transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1); }
+.nav-links a:hover::after { width: 100%; }
+.nav-links a.active { color: var(--orange-text); }
+.nav-links a.active::after { width: 100%; }
+
+.nav-cta-btn { font-weight: 500 !important; padding: 0.7rem 1.8rem; background: var(--orange); color: var(--warm-dark) !important; border-radius: 100px; transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1); box-shadow: 0 2px 12px rgba(232,134,58,0.25); }
+.nav-cta-btn::after { display: none !important; }
+.nav-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232,134,58,0.35); }
+
+/* SHARED */
+.section-tag { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; font-weight: 500; color: var(--orange-text); letter-spacing: 0.08em; margin-bottom: 1.5rem; }
+.section-tag-dot { width: 7px; height: 7px; background: var(--orange); border-radius: 50%; }
+
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+/* ============================================
+   PAGE HERO
+   ============================================ */
+.page-hero {
+  padding: 11rem 4rem 5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  opacity: 0; transform: translateY(30px);
+  animation: fadeUp 1s cubic-bezier(0.33, 1, 0.68, 1) 0.3s forwards;
+}
+
+.page-hero-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  line-height: 1.2;
+  margin-bottom: 1.2rem;
+}
+
+.page-hero-heading em { font-style: italic; font-weight: 600; color: var(--orange-text); }
+
+.page-hero-lead {
+  font-size: 1.1rem; font-weight: 300;
+  line-height: 1.9; color: var(--warm-gray);
+  max-width: 550px; margin: 0 auto;
+}
+
+/* Quick jump nav */
+.service-jumps {
+  display: flex; justify-content: center; gap: 1rem;
+  margin-top: 3rem;
+  opacity: 0; transform: translateY(15px);
+  animation: fadeUp 0.8s cubic-bezier(0.33, 1, 0.68, 1) 0.6s forwards;
+}
+
+.service-jump {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.8rem 1.5rem;
+  background: white;
+  border-radius: 100px;
+  text-decoration: none;
+  color: var(--warm-dark);
+  font-size: 0.85rem; font-weight: 500;
+  box-shadow: 0 2px 10px rgba(28,25,23,0.04);
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.service-jump:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(28,25,23,0.08);
+  color: var(--orange-text);
+}
+
+.service-jump-icon {
+  width: 32px; height: 32px;
+  background: var(--orange-soft);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.service-jump:hover .service-jump-icon { background: var(--orange-glow); }
+
+/* ============================================
+   SERVICE SHOWCASE — Alternating full sections
+   ============================================ */
+.service-showcase {
+  padding: 0 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.service-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  padding: 5rem 0;
+}
+
+.service-section.reversed .service-visual { order: 1; }
+.service-section.reversed .service-info { order: 0; }
+
+.service-visual {
+  opacity: 0; transform: translateY(40px);
+}
+
+.service-visual.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.service-img-wrap {
+  border-radius: 24px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(28,25,23,0.1);
+}
+
+.service-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* Badge overlay on image */
+.service-badge {
+  position: absolute;
+  top: 1.5rem; right: 1.5rem;
+  background: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--warm-dark);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex; align-items: center; gap: 0.4rem;
+}
+
+.service-badge-dot {
+  width: 6px; height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+.service-info {
+  opacity: 0; transform: translateY(40px);
+}
+
+.service-info.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1) 0.15s;
+}
+
+.service-number {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 5rem;
+  color: var(--orange);
+  opacity: 0.08;
+  line-height: 1;
+  margin-bottom: -0.5rem;
+}
+
+.service-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.service-name em { font-style: italic; color: var(--orange-text); }
+
+.service-desc {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--warm-gray);
+  margin-bottom: 2rem;
+  max-width: 440px;
+}
+
+/* Feature list */
+.feature-list {
+  list-style: none;
+  display: flex; flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+}
+
+.feature-item {
+  display: flex; align-items: center; gap: 0.8rem;
+  font-size: 0.9rem; color: var(--warm-dark);
+}
+
+.feature-check {
+  width: 24px; height: 24px;
+  background: var(--orange-soft);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.875rem; color: var(--orange-text);
+  flex-shrink: 0;
+}
+
+.btn-service {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem; font-weight: 500;
+  padding: 0.9rem 2rem;
+  background: var(--orange);
+  color: var(--warm-dark);
+  border: none; border-radius: 100px;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 2px 12px rgba(232,134,58,0.2);
+}
+
+.btn-service:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(232,134,58,0.3);
+}
+
+/* Divider between services */
+.service-divider {
+  display: flex; align-items: center; gap: 1.5rem;
+  padding: 2rem 0;
+  max-width: 1400px; margin: 0 auto;
+}
+
+.service-divider-line {
+  flex: 1; height: 1px;
+  background: var(--sand);
+}
+
+.service-divider-num {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 0.85rem;
+  color: var(--warm-light);
+  letter-spacing: 0.1em;
+}
+
+/* ============================================
+   COMPARISON STRIP
+   ============================================ */
+.comparison {
+  padding: 6rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.comparison-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  opacity: 0; transform: translateY(20px);
+}
+
+.comparison-header.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.comparison-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  margin-bottom: 0.5rem;
+}
+
+.comparison-sub {
+  font-size: 0.95rem;
+  color: var(--warm-gray);
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.comparison-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(28,25,23,0.04);
+  opacity: 0; transform: translateY(25px);
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.comparison-card.revealed {
+  opacity: 1; transform: translateY(0);
+}
+
+.comparison-card:nth-child(2).revealed { transition-delay: 0.1s; }
+.comparison-card:nth-child(3).revealed { transition-delay: 0.2s; }
+
+.comparison-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(28,25,23,0.08);
+}
+
+.comparison-card.featured {
+  border: 2px solid var(--orange);
+}
+
+.comparison-card.featured::before {
+  content: 'הפופולרי ביותר';
+  position: absolute;
+  top: 0; right: 0; left: 0;
+  background: var(--orange);
+  color: var(--warm-dark);
+  font-size: 0.875rem; font-weight: 500;
+  padding: 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+.comparison-icon {
+  width: 56px; height: 56px;
+  background: var(--orange-soft);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1.2rem;
+}
+
+.comparison-card.featured .comparison-icon {
+  background: var(--orange-glow);
+}
+
+.comparison-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.comparison-desc {
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.comparison-features {
+  list-style: none;
+  display: flex; flex-direction: column;
+  gap: 0.6rem;
+  text-align: right;
+  margin-bottom: 2rem;
+}
+
+.comparison-features li {
+  font-size: 0.8rem;
+  color: var(--warm-dark);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+.comparison-features li::before {
+  content: '';
+  display: inline-block;
+  width: 11px; height: 11px;
+  flex-shrink: 0;
+  background-color: var(--orange);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,6.5 5,9.5 10,3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,6.5 5,9.5 10,3'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+}
+
+.btn-comparison {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem; font-weight: 500;
+  padding: 0.8rem 1.8rem;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  cursor: pointer; border: none;
+}
+
+.btn-comparison-primary {
+  background: var(--orange); color: var(--warm-dark);
+  box-shadow: 0 2px 12px rgba(232,134,58,0.2);
+}
+
+.btn-comparison-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232,134,58,0.3);
+}
+
+.btn-comparison-outline {
+  background: transparent;
+  border: 1.5px solid var(--sand);
+  color: var(--warm-dark);
+}
+
+.btn-comparison-outline:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* ============================================
+   CTA
+   ============================================ */
+.cta-section {
+  margin: 2rem 4rem 4rem;
+  border-radius: 28px;
+  background: var(--warm-dark);
+  padding: 6rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute; width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,134,58,0.12) 0%, transparent 70%);
+  top: -200px; right: -100px; pointer-events: none;
+}
+
+.cta-inner {
+  position: relative; z-index: 2;
+  max-width: 600px; margin: 0 auto;
+  opacity: 0; transform: translateY(25px);
+}
+
+.cta-inner.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.cta-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: white; line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.cta-heading em { font-style: italic; font-weight: 600; color: var(--orange); }
+
+.cta-sub {
+  font-size: 1rem; color: rgba(255,255,255,0.65);
+  line-height: 1.7; margin-bottom: 2.5rem;
+}
+
+.btn-cta {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-body); font-size: 1rem; font-weight: 500;
+  padding: 1.1rem 2.8rem; background: var(--orange); color: var(--warm-dark);
+  border: none; border-radius: 100px; cursor: pointer; text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 4px 24px rgba(232,134,58,0.3);
+}
+
+.btn-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(232,134,58,0.4); }
+
+/* FOOTER */
+.footer {
+  background: var(--warm-dark); padding: 4rem; border-radius: 28px 28px 0 0;
+}
+
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+  padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 2rem;
+}
+
+.footer-brand-name { font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; color: white; margin-bottom: 1rem; }
+.footer-brand-desc { font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.7; max-width: 300px; }
+.footer-col-title { font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.6); margin-bottom: 1.2rem; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-col a { font-size: 0.85rem; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.3s; }
+.footer-col a:hover { color: var(--orange); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.2); }
+.footer-social { display: flex; gap: 1rem; }
+.footer-social a { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.8rem; transition: all 0.3s ease; }
+.footer-social a:hover { border-color: var(--orange); color: var(--orange); background: rgba(232,134,58,0.1); }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .service-section { grid-template-columns: 1fr; gap: 3rem; }
+  .service-section.reversed .service-visual { order: 0; }
+  .service-section.reversed .service-info { order: 0; }
+  .comparison-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .page-hero { padding: 9rem 2.5rem 3rem; }
+  .service-showcase { padding: 0 2.5rem; }
+  .comparison { padding: 5rem 2.5rem; }
+  .cta-section { margin: 2rem 2.5rem 3rem; padding: 4rem 2.5rem; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .nav { padding: 1.2rem 2rem; }
+  .service-jumps { flex-direction: column; align-items: center; gap: 0.75rem; }
+  .cursor-dot, .cursor-ring { display: none; }
+}
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .page-hero-heading { font-size: clamp(2rem, 8vw, 3rem); }
+  .service-name { font-size: clamp(1.5rem, 6vw, 2rem); }
+  .service-number { font-size: 3rem; }
+  .footer { padding: 3rem 2rem; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .page-hero { opacity: 1 !important; transform: none !important; }
+  .service-jumps { opacity: 1 !important; transform: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<div id="site-header"></div>
+
+<!-- PAGE HERO -->
+<section class="page-hero" id="main-content" aria-labelledby="services-hero-heading">
+  <div class="section-tag" style="justify-content: center;">
+    <span class="section-tag-dot" aria-hidden="true"></span>
+    השירותים שלנו
+  </div>
+  <h1 class="page-hero-heading" id="services-hero-heading">
+    שלושה פתרונות.<br>
+    <em>חוויה אחת.</em>
+  </h1>
+  <p class="page-hero-lead">
+    כל שירות עומד בפני עצמו — אבל ביחד, הם נותנים לעסק שלך
+    נוכחות טלפונית שלמה. בחרו מה שמתאים לכם עכשיו, הוסיפו כשתרצו.
+  </p>
+  <div class="service-jumps">
+    <a href="#svc-phone" class="service-jump">
+      <span class="service-jump-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l.94-.94a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+      מערכות תקשורת
+    </a>
+    <a href="#svc-virtual" class="service-jump">
+      <span class="service-jump-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="17" x2="13" y2="17"/></svg></span>
+      מספרים וירטואליים
+    </a>
+    <a href="#svc-answering" class="service-jump">
+      <span class="service-jump-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></span>
+      שירות טלפוני
+    </a>
+  </div>
+</section>
+
+<!-- SERVICE SHOWCASES -->
+<div class="service-showcase">
+
+  <!-- SERVICE 01 -->
+  <section class="service-section" id="svc-phone" aria-labelledby="svc-phone-heading">
+    <div class="service-visual" data-reveal>
+      <div class="service-img-wrap">
+        <div class="service-img" role="img" aria-label="מערכות תקשורת עסקית" style="background: url('service-phone-systems.png') center/cover no-repeat;"></div>
+        <div class="service-badge"><span class="service-badge-dot" aria-hidden="true"></span> הפתרון המרכזי</div>
+      </div>
+    </div>
+    <div class="service-info" data-reveal>
+      <div class="service-number" aria-hidden="true">01</div>
+      <div class="section-tag"><span class="section-tag-dot" aria-hidden="true"></span> תשתית</div>
+      <h2 class="service-name" id="svc-phone-heading">מערכות <em>תקשורת</em></h2>
+      <p class="service-desc">
+        מרכזיית IP בענן שגדלה עם העסק. ניהול שלוחות, הקלטות,
+        ניתוב חכם ודשבורד מלא — הכל ללא חומרה, הכל בשליטה שלך.
+        כמו מרכזייה של חברה גדולה, במחיר של עסק קטן.
+      </p>
+      <ul class="feature-list">
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> מרכזייה מלאה בענן</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> ניתוב שיחות חכם ותפריט קולי</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> הקלטת כל השיחות</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> דשבורד ניהול בזמן אמת</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> שלוחות ללא הגבלה</li>
+      </ul>
+      <a href="service-phone-systems-design.html" class="btn-service">למדו עוד ←</a>
+    </div>
+  </section>
+
+  <div class="service-divider">
+    <div class="service-divider-line"></div>
+    <span class="service-divider-num">01 — 02</span>
+    <div class="service-divider-line"></div>
+  </div>
+
+  <!-- SERVICE 02 -->
+  <section class="service-section reversed" id="svc-virtual" aria-labelledby="svc-virtual-heading">
+    <div class="service-visual" data-reveal>
+      <div class="service-img-wrap">
+        <div class="service-img" role="img" aria-label="מספרים וירטואליים לעסקים" style="background: url('service-virtual-numbers.png') center/cover no-repeat;"></div>
+        <div class="service-badge"><span class="service-badge-dot" aria-hidden="true"></span> הכי פופולרי</div>
+      </div>
+    </div>
+    <div class="service-info" data-reveal>
+      <div class="service-number" aria-hidden="true">02</div>
+      <div class="section-tag"><span class="section-tag-dot" aria-hidden="true"></span> נוכחות</div>
+      <h2 class="service-name" id="svc-virtual-heading">מספרים <em>וירטואליים</em></h2>
+      <p class="service-desc">
+        מספר טלפון ייעודי לכל צורך — נייד, קווי, 1-800 או בינלאומי.
+        בלי חומרה, בלי התחייבות, פעיל מיד. הלקוחות שלך יחשבו
+        שיש לך משרד בכל עיר.
+      </p>
+      <ul class="feature-list">
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> מספרי 1-800 לנוכחות ארצית</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> מספרים מקומיים בכל אזור חיוג</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> מספרים בינלאומיים</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> העברה לנייד, קווי או מרכזייה</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> פעיל תוך דקות</li>
+      </ul>
+      <a href="service-virtual-numbers-design.html" class="btn-service">למדו עוד ←</a>
+    </div>
+  </section>
+
+  <div class="service-divider">
+    <div class="service-divider-line"></div>
+    <span class="service-divider-num">02 — 03</span>
+    <div class="service-divider-line"></div>
+  </div>
+
+  <!-- SERVICE 03 -->
+  <section class="service-section" id="svc-answering" aria-labelledby="svc-answering-heading">
+    <div class="service-visual" data-reveal>
+      <div class="service-img-wrap">
+        <div class="service-img" role="img" aria-label="שירות טלפוני ומענה אנושי" style="background: url('service-answering.png') center/cover no-repeat;"></div>
+        <div class="service-badge"><span class="service-badge-dot" aria-hidden="true"></span> פרימיום</div>
+      </div>
+    </div>
+    <div class="service-info" data-reveal>
+      <div class="service-number" aria-hidden="true">03</div>
+      <div class="section-tag"><span class="section-tag-dot" aria-hidden="true"></span> מענה</div>
+      <h2 class="service-name" id="svc-answering-heading">שירות <em>טלפוני</em></h2>
+      <p class="service-desc">
+        מענה אנושי מקצועי בשם העסק שלך. מזכירה וירטואלית,
+        תיאום פגישות, קבלת הודעות — כאילו יש לך צוות שלם
+        שיושב במשרד ועונה לכל שיחה.
+      </p>
+      <ul class="feature-list">
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> מענה אנושי בשם החברה</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> תיאום פגישות ויומן</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> קבלת הודעות ותמלולים</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> שעות מורחבות</li>
+        <li class="feature-item"><span class="feature-check"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#E8863A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,6.5 5,9.5 10,3"/></svg></span> סיכום יומי במייל</li>
+      </ul>
+      <a href="service-answering-design.html" class="btn-service">למדו עוד ←</a>
+    </div>
+  </section>
+
+</div>
+
+<!-- COMPARISON -->
+<section class="comparison" aria-labelledby="comparison-heading">
+  <div class="comparison-header" data-reveal>
+    <div class="section-tag" style="justify-content: center;">
+      <span class="section-tag-dot" aria-hidden="true"></span>
+      בקצרה
+    </div>
+    <h2 class="comparison-heading" id="comparison-heading">לא בטוחים מה מתאים?</h2>
+    <p class="comparison-sub">הנה סיכום מהיר שיעזור להחליט</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comparison-card" data-reveal>
+      <div class="comparison-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l.94-.94a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <h3 class="comparison-title">מערכות תקשורת</h3>
+      <p class="comparison-desc">לעסקים שצריכים מרכזייה מלאה עם שלוחות, הקלטות וניתוב</p>
+      <ul class="comparison-features">
+        <li>מרכזייה בענן</li>
+        <li>שלוחות ללא הגבלה</li>
+        <li>הקלטת שיחות</li>
+        <li>דשבורד ניהול</li>
+        <li>תפריט קולי</li>
+      </ul>
+      <button class="btn-comparison btn-comparison-outline" aria-label="בחרו מערכות תקשורת">בחרו שירות</button>
+    </div>
+    <div class="comparison-card featured" data-reveal>
+      <div class="comparison-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <h3 class="comparison-title">מספרים וירטואליים</h3>
+      <p class="comparison-desc">לעסקים שצריכים נוכחות טלפונית מקצועית — מיד</p>
+      <ul class="comparison-features">
+        <li>מספרי 1-800</li>
+        <li>מספרים מקומיים</li>
+        <li>מספרים בינלאומיים</li>
+        <li>העברה לכל מכשיר</li>
+        <li>ללא חומרה</li>
+      </ul>
+      <button class="btn-comparison btn-comparison-primary" aria-label="בחרו מספרים וירטואליים">בחרו שירות ←</button>
+    </div>
+    <div class="comparison-card" data-reveal>
+      <div class="comparison-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8863A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+      <h3 class="comparison-title">שירות טלפוני</h3>
+      <p class="comparison-desc">לעסקים שצריכים מענה אנושי ללא גיוס עובדים</p>
+      <ul class="comparison-features">
+        <li>מענה בשם החברה</li>
+        <li>תיאום פגישות</li>
+        <li>קבלת הודעות</li>
+        <li>שעות מורחבות</li>
+        <li>סיכום יומי</li>
+      </ul>
+      <button class="btn-comparison btn-comparison-outline" aria-label="בחרו שירות טלפוני">בחרו שירות</button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" aria-labelledby="services-cta-heading">
+  <div class="cta-inner" data-reveal>
+    <h2 class="cta-heading" id="services-cta-heading">לא בטוחים?<br><em>בואו נדבר.</em></h2>
+    <p class="cta-sub">שיחת ייעוץ קצרה ונמצא את הפתרון המדויק לעסק שלכם. בלי התחייבות.</p>
+    <a href="contact-page-design.html" class="btn-cta">קבעו שיחה ←</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div id="site-footer"></div>
+
+<script>
+const dot = document.querySelector('.cursor-dot');
+const ring = document.querySelector('.cursor-ring');
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    dot.style.left = e.clientX - 5 + 'px'; dot.style.top = e.clientY - 5 + 'px';
+    ring.style.left = e.clientX - 20 + 'px'; ring.style.top = e.clientY - 20 + 'px';
+  });
+  document.querySelectorAll('a, button, .comparison-card, .service-jump').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+} else { dot.style.display = 'none'; ring.style.display = 'none'; }
+
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('revealed'); revealObserver.unobserve(entry.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+</script>
+</body>
+</html>

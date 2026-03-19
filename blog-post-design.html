@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qualia — 7 הרגלי תקשורת שהופכים עסק קטן לעסק שנראה גדול</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500&family=Noto+Serif+Hebrew:wght@300;600;900&family=Noto+Sans+Hebrew:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="header-footer.js" defer></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange: #E8863A;
+  --orange-glow: rgba(232, 134, 58, 0.2);
+  --orange-soft: rgba(232, 134, 58, 0.08);
+  --parchment: #FAF6F1;
+  --sand: #E7DDD3;
+  --stone: #C4977A;
+  --warm-dark: #1C1917;
+  --warm-gray: #6B6460;
+  --warm-light: #D6CEC6;
+  --orange-text: #C46820;
+  --font-display: 'Fraunces', 'Noto Serif Hebrew', serif;
+  --font-body: 'DM Sans', 'Noto Sans Hebrew', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--parchment);
+  color: var(--warm-dark);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--orange); color: white; }
+
+/* ============================================
+   CUSTOM CURSOR
+   ============================================ */
+.cursor-dot {
+  width: 10px; height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease;
+  mix-blend-mode: exclusion;
+}
+
+.cursor-ring {
+  width: 40px; height: 40px;
+  border: 1.5px solid var(--orange);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+  transform: translate(-15px, -15px);
+  opacity: 0.5;
+}
+
+.cursor-ring.hovering {
+  width: 60px; height: 60px;
+  transform: translate(-25px, -25px);
+  opacity: 1;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.8rem 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(250, 246, 241, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav.scrolled {
+  padding: 1rem 3.5rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: var(--warm-dark);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.nav-links {
+  display: flex; gap: 2.5rem;
+  list-style: none; align-items: center;
+}
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--warm-dark);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; right: 0;
+  width: 0; height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+  transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav-links a:hover::after { width: 100%; }
+.nav-links a.active { color: var(--orange-text); }
+.nav-links a.active::after { width: 100%; }
+
+.nav-cta-btn {
+  font-weight: 500 !important;
+  padding: 0.7rem 1.8rem;
+  background: var(--orange);
+  color: var(--warm-dark) !important;
+  border-radius: 100px;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 2px 12px rgba(232, 134, 58, 0.25);
+}
+
+.nav-cta-btn::after { display: none !important; }
+.nav-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232, 134, 58, 0.35); }
+
+/* ============================================
+   READING PROGRESS BAR
+   ============================================ */
+.reading-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: var(--orange);
+  z-index: 200;
+  width: 0%;
+  transition: width 0.1s linear;
+  transform-origin: right;
+}
+
+/* ============================================
+   BREADCRUMB
+   ============================================ */
+.breadcrumb-wrap {
+  padding: 7rem 3.5rem 0;
+  max-width: 800px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeUp 0.7s cubic-bezier(0.33, 1, 0.68, 1) 0.1s forwards;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--warm-gray);
+  font-weight: 400;
+}
+
+.breadcrumb li a {
+  color: var(--warm-gray);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.breadcrumb li a:hover { color: var(--orange); }
+
+.breadcrumb li.active {
+  color: var(--warm-dark);
+  font-weight: 500;
+}
+
+.breadcrumb-sep {
+  color: var(--warm-light);
+  font-size: 0.7rem;
+}
+
+/* ============================================
+   ARTICLE HERO
+   ============================================ */
+.article-hero {
+  padding: 3rem 3.5rem 0;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.article-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--orange-text);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.6rem;
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.33, 1, 0.68, 1) 0.2s forwards;
+}
+
+.article-category-dot {
+  width: 6px; height: 6px;
+  background: var(--orange);
+  border-radius: 50%;
+}
+
+.article-headline {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  line-height: 1.2;
+  color: var(--warm-dark);
+  letter-spacing: -0.02em;
+  margin-bottom: 1.6rem;
+  opacity: 0;
+  animation: fadeUp 0.8s cubic-bezier(0.33, 1, 0.68, 1) 0.3s forwards;
+}
+
+.article-headline em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--orange-text);
+}
+
+.article-standfirst {
+  font-size: 1.18rem;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--warm-gray);
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s cubic-bezier(0.33, 1, 0.68, 1) 0.4s forwards;
+}
+
+/* Meta row: author + date + reading time */
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--sand);
+  border-bottom: 1px solid var(--sand);
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.33, 1, 0.68, 1) 0.5s forwards;
+  flex-wrap: wrap;
+}
+
+.article-author {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex: 1;
+}
+
+.author-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--stone) 0%, var(--sand) 100%);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1rem;
+  color: white;
+}
+
+.author-info {}
+
+.author-name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--warm-dark);
+  margin-bottom: 0.15rem;
+}
+
+.author-title {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+}
+
+.meta-divider {
+  width: 1px; height: 32px;
+  background: var(--sand);
+  flex-shrink: 0;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.meta-label {
+  font-size: 0.68rem;
+  color: var(--warm-gray);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.meta-value {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--warm-dark);
+}
+
+.meta-read-time {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--warm-gray);
+  font-weight: 400;
+  padding: 0.4rem 1rem;
+  background: var(--orange-soft);
+  border: 1px solid rgba(232, 134, 58, 0.2);
+  border-radius: 100px;
+}
+
+.meta-read-icon {
+  font-size: 0.9rem;
+}
+
+/* Share toolbar */
+.article-share {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-right: auto;
+}
+
+.share-label {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+  letter-spacing: 0.05em;
+}
+
+.share-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--sand);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--warm-gray);
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.share-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: var(--orange-soft);
+}
+
+/* ============================================
+   FEATURED IMAGE
+   ============================================ */
+.article-featured-image {
+  padding: 0 3.5rem;
+  max-width: 1040px;
+  margin: 0 auto 4rem;
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.33, 1, 0.68, 1) 0.55s forwards;
+}
+
+.featured-img-wrap {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 16/7;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(28, 25, 23, 0.1);
+}
+
+/* Warm gradient placeholder (would be a real photo) */
+.featured-img-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    135deg,
+    #2a1f1a 0%,
+    #3d2c22 20%,
+    #C4977A 55%,
+    #E8863A 75%,
+    #FAF6F1 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Decorative text overlay on hero image */
+.featured-img-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 3rem;
+  background: linear-gradient(to top, rgba(28, 25, 23, 0.82) 0%, rgba(28, 25, 23, 0.45) 35%, transparent 60%);
+}
+
+.featured-img-caption {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.85);
+  font-style: italic;
+}
+
+/* Decorative orange tab on image corner */
+.featured-img-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 60px; height: 60px;
+  background: var(--orange);
+  border-radius: 0 0 0 20px;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+/* ============================================
+   ARTICLE BODY LAYOUT
+   ============================================ */
+.article-layout {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 3.5rem 8rem;
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 5rem;
+  align-items: start;
+}
+
+/* ============================================
+   ARTICLE BODY — rich editorial typography
+   ============================================ */
+.article-body {
+  min-width: 0;
+}
+
+.article-body p {
+  font-family: var(--font-body);
+  font-size: 1.08rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--warm-dark);
+  margin-bottom: 1.8rem;
+}
+
+.article-body p:first-child::first-letter {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 4.5rem;
+  line-height: 0.85;
+  float: right;
+  margin-left: 0.12em;
+  margin-bottom: -0.05em;
+  color: var(--orange-text);
+}
+
+/* Section headings within article */
+.article-body h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+  line-height: 1.3;
+  color: var(--warm-dark);
+  margin-top: 3.5rem;
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.article-body h3 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: var(--warm-dark);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Numbered tip headings */
+.article-body .tip-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.75rem;
+  color: var(--orange);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+/* Blockquote — editorial pull quote style */
+.article-body blockquote {
+  position: relative;
+  margin: 3rem 0;
+  padding: 2.5rem 2.5rem 2.5rem 3.5rem;
+  background: white;
+  border-radius: 16px;
+  border-right: 4px solid var(--orange);
+  box-shadow: 0 4px 32px rgba(28, 25, 23, 0.06);
+}
+
+.article-body blockquote::before {
+  content: '״';
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 5rem;
+  color: var(--orange);
+  opacity: 0.15;
+  position: absolute;
+  top: -0.5rem;
+  right: 1.5rem;
+  line-height: 1;
+}
+
+.article-body blockquote p {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: var(--warm-dark);
+  margin-bottom: 1rem;
+}
+
+.article-body blockquote p:last-child { margin-bottom: 0; }
+
+.article-body blockquote cite {
+  font-size: 0.8rem;
+  font-style: normal;
+  color: var(--warm-gray);
+  font-weight: 500;
+  display: block;
+  margin-top: 0.8rem;
+}
+
+/* Unordered list */
+.article-body ul {
+  list-style: none;
+  margin: 1.5rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.article-body ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--warm-dark);
+}
+
+.article-body ul li::before {
+  content: '';
+  width: 6px; height: 6px;
+  min-width: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  margin-top: 0.7em;
+  flex-shrink: 0;
+}
+
+/* Ordered list */
+.article-body ol {
+  list-style: none;
+  counter-reset: ol-counter;
+  margin: 1.5rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.article-body ol li {
+  counter-increment: ol-counter;
+  display: flex;
+  gap: 1rem;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--warm-dark);
+}
+
+.article-body ol li::before {
+  content: counter(ol-counter, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.85rem;
+  color: var(--orange-text);
+  min-width: 2rem;
+  line-height: 1.75;
+  flex-shrink: 0;
+}
+
+/* Pull quote — full-width emphasis */
+.pull-quote {
+  margin: 3.5rem 0;
+  padding: 3rem 0;
+  border-top: 1px solid var(--sand);
+  border-bottom: 1px solid var(--sand);
+  text-align: center;
+}
+
+.pull-quote-text {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  line-height: 1.55;
+  color: var(--warm-dark);
+  position: relative;
+}
+
+.pull-quote-text strong {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--orange-text);
+}
+
+/* Tip box — highlighted callout */
+.tip-box {
+  background: var(--orange-soft);
+  border: 1px solid rgba(232, 134, 58, 0.2);
+  border-radius: 14px;
+  padding: 2rem 2.2rem;
+  margin: 2.5rem 0;
+}
+
+.tip-box-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--orange);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tip-box-label::before {
+  content: '';
+  width: 14px; height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+}
+
+.tip-box p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--warm-dark);
+  margin-bottom: 0 !important;
+}
+
+/* Article horizontal rule */
+.article-body hr {
+  border: none;
+  height: 1px;
+  background: var(--sand);
+  margin: 3rem 0;
+}
+
+/* Numbered tip section header — orange pill */
+.tip-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.tip-counter {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.tip-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--warm-dark);
+}
+
+/* ============================================
+   ARTICLE SIDEBAR — sticky on desktop
+   ============================================ */
+.article-sidebar {
+  position: sticky;
+  top: 7rem;
+}
+
+.sidebar-section {
+  margin-bottom: 2.5rem;
+}
+
+.sidebar-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--warm-gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-label::before {
+  content: '';
+  width: 16px; height: 1px;
+  background: var(--warm-light);
+}
+
+/* Table of contents */
+.toc {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.toc li a {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--warm-gray);
+  text-decoration: none;
+  padding: 0.55rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s;
+  border-right: 2px solid transparent;
+  line-height: 1.4;
+}
+
+.toc li a:hover,
+.toc li.toc-active a {
+  color: var(--orange-text);
+  background: var(--orange-soft);
+  border-right-color: var(--orange);
+}
+
+/* Tags */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.85rem;
+  background: white;
+  border: 1px solid var(--sand);
+  border-radius: 100px;
+  color: var(--warm-gray);
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.tag:hover {
+  border-color: var(--orange);
+  color: var(--orange-text);
+  background: var(--orange-soft);
+}
+
+/* Share sidebar */
+.share-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.share-sidebar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--warm-dark);
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  transition: all 0.3s;
+}
+
+.share-sidebar-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  box-shadow: 0 2px 12px var(--orange-glow);
+}
+
+.share-sidebar-icon {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.share-sidebar-icon.linkedin { background: #0A66C2; color: white; }
+.share-sidebar-icon.whatsapp { background: #25D366; color: white; }
+.share-sidebar-icon.email { background: var(--sand); color: var(--warm-dark); }
+
+/* ============================================
+   REVEAL ANIMATIONS
+   ============================================ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.85s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   ARTICLE DIVIDER — decorative
+   ============================================ */
+.article-divider {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 5rem;
+}
+
+.article-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--sand);
+}
+
+.article-divider-ornament {
+  width: 8px; height: 8px;
+  background: var(--orange);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   AUTHOR BIO CARD
+   ============================================ */
+.author-bio-section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 3.5rem 6rem;
+}
+
+.author-bio-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  box-shadow: 0 4px 40px rgba(28, 25, 23, 0.06);
+  border: 1px solid var(--sand);
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.author-bio-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.9s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.author-bio-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--stone) 0%, var(--orange) 100%);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: white;
+  position: relative;
+}
+
+.author-bio-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--orange);
+  opacity: 0.4;
+}
+
+.author-bio-text {}
+
+.author-bio-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--warm-dark);
+  margin-bottom: 0.3rem;
+}
+
+.author-bio-role {
+  font-size: 0.8rem;
+  color: var(--orange-text);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.author-bio-description {
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--warm-gray);
+  margin-bottom: 1.2rem;
+}
+
+.author-bio-links {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.author-bio-link {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.9rem;
+  border: 1px solid var(--sand);
+  border-radius: 100px;
+  color: var(--warm-gray);
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.author-bio-link:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* ============================================
+   RELATED POSTS GRID
+   ============================================ */
+.related-posts {
+  background: white;
+  padding: 5rem 3.5rem 6rem;
+  border-top: 1px solid var(--sand);
+}
+
+.related-posts-header {
+  max-width: 1040px;
+  margin: 0 auto 3rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.related-posts-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--warm-dark);
+}
+
+.related-posts-heading em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--orange);
+}
+
+.related-posts-all {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--orange);
+  text-decoration: none;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.related-posts-all:hover { opacity: 0.7; }
+
+.related-grid {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.related-card {
+  background: var(--parchment);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1), box-shadow 0.4s ease;
+  border: 1px solid var(--sand);
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.related-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.33, 1, 0.68, 1), box-shadow 0.4s ease;
+}
+
+.related-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 48px rgba(28, 25, 23, 0.1);
+}
+
+.related-card-img {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  position: relative;
+}
+
+.related-card-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s ease;
+}
+
+.related-card:hover .related-card-img-placeholder {
+  transform: scale(1.04);
+}
+
+.related-card-content {
+  padding: 1.5rem;
+}
+
+.related-card-cat {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--orange-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.related-card-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--warm-dark);
+  margin-bottom: 0.8rem;
+  transition: color 0.3s;
+}
+
+.related-card:hover .related-card-title {
+  color: var(--orange);
+}
+
+.related-card-meta {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+  display: flex;
+  gap: 1rem;
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+.cta-section {
+  padding: 8rem 4rem;
+  text-align: center;
+}
+
+.cta-inner {
+  max-width: 650px;
+  margin: 0 auto;
+  opacity: 0; transform: translateY(30px);
+}
+
+.cta-inner.revealed {
+  opacity: 1; transform: translateY(0);
+  transition: all 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.cta-heading {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.cta-heading em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--orange);
+}
+
+.cta-sub {
+  font-size: 1rem;
+  color: var(--warm-gray);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 1.1rem 2.8rem;
+  background: var(--orange);
+  color: var(--warm-dark);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 4px 24px rgba(232, 134, 58, 0.3);
+}
+
+.btn-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(232, 134, 58, 0.4);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--warm-gray);
+  text-decoration: none;
+  transition: color 0.3s;
+  margin-right: 1.5rem;
+}
+
+.btn-secondary:hover { color: var(--orange); }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  background: var(--warm-dark);
+  padding: 4rem;
+  border-radius: 28px 28px 0 0;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 2rem;
+}
+
+.footer-brand-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footer-brand-desc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.7;
+  max-width: 300px;
+}
+
+.footer-col-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1.2rem;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-col a {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.footer-col a:hover { color: var(--orange); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.2);
+}
+
+.footer-social { display: flex; gap: 1rem; }
+
+.footer-social a {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(232,134,58,0.1);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .article-layout {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 0 2.5rem 6rem;
+  }
+  .article-sidebar { position: static; }
+  .related-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .nav { padding: 1.2rem 2rem; }
+  .cursor-dot, .cursor-ring { display: none; }
+  .breadcrumb-wrap { padding: 7rem 2.5rem 0; }
+  .article-hero { padding: 3rem 2.5rem 0; }
+  .article-featured-image { padding: 0 2.5rem; }
+  .author-bio-section { padding: 0 2.5rem 5rem; }
+  .related-posts { padding: 4rem 2.5rem 5rem; }
+}
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .breadcrumb-wrap { padding: 6rem 1.5rem 0; }
+  .article-hero { padding: 2rem 1.5rem 0; }
+  .article-featured-image { padding: 0 1.5rem; }
+  .article-layout { padding: 0 1.5rem 5rem; }
+  .article-meta { gap: 1rem; }
+  .article-meta .meta-divider { display: none; }
+  .article-meta .meta-item:last-child { display: none; }
+  .article-share { display: none; }
+  .author-bio-card { flex-direction: column; }
+  .related-grid { grid-template-columns: 1fr; }
+  .related-posts { padding: 3rem 1.5rem 4rem; }
+  .author-bio-section { padding: 0 1.5rem 4rem; }
+  .cta-section { padding: 5rem 1.5rem; }
+  .footer { padding: 3rem 1.5rem; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+  .article-body p:first-child::first-letter { font-size: 3.5rem; }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal], .author-bio-card, .related-card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Reading progress bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<!-- ============================================
+     NAVIGATION
+     ============================================ -->
+<div id="site-header"></div>
+
+<!-- ============================================
+     BREADCRUMB
+     ============================================ -->
+<div class="breadcrumb-wrap">
+  <ol class="breadcrumb">
+    <li><a href="index.html">בית</a></li>
+    <li class="breadcrumb-sep">←</li>
+    <li><a href="blog-archive-design.html">בלוג</a></li>
+    <li class="breadcrumb-sep">←</li>
+    <li><a href="blog-archive-design.html">תקשורת עסקית</a></li>
+    <li class="breadcrumb-sep">←</li>
+    <li class="active">7 הרגלי תקשורת שהופכים עסק קטן לעסק שנראה גדול</li>
+  </ol>
+</div>
+
+<!-- ============================================
+     ARTICLE HERO
+     ============================================ -->
+<header class="article-hero" id="main-content" aria-labelledby="article-headline">
+
+  <div class="article-category-tag">
+    <span class="article-category-dot" aria-hidden="true"></span>
+    תקשורת עסקית
+  </div>
+
+  <h1 class="article-headline" id="article-headline">
+    7 הרגלי תקשורת שהופכים<br>
+    עסק קטן לעסק ש<em>נראה</em> גדול
+  </h1>
+
+  <p class="article-standfirst">
+    הלקוח שלכם לא יודע כמה אנשים יש לכם. הוא רק יודע איך מרגישים כשמתקשרים אליכם. גיליתם את ההבדל הזה — והוא שווה הכל.
+  </p>
+
+  <div class="article-meta">
+    <div class="article-author">
+      <div class="author-avatar">רמ</div>
+      <div class="author-info">
+        <div class="author-name">רן מנחם</div>
+        <div class="author-title">מנהל תוכן, <span lang="en">Qualia</span></div>
+      </div>
+    </div>
+    <div class="meta-divider"></div>
+    <div class="meta-item">
+      <span class="meta-label">תאריך</span>
+      <span class="meta-value">מרץ 2025</span>
+    </div>
+    <div class="meta-divider"></div>
+    <div class="meta-item">
+      <span class="meta-label">עדכון אחרון</span>
+      <span class="meta-value">מרץ 2025</span>
+    </div>
+    <span class="meta-read-time">
+      <span class="meta-read-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 6a2 2 0 0 1 2-2h6l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z" stroke="#78716C" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 8v10M12 8l-3 2M12 8l3 2" stroke="#78716C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      7 דקות קריאה
+    </span>
+    <div class="article-share">
+      <span class="share-label">שתפו:</span>
+      <a href="#" class="share-btn" aria-label="שתף בלינקדאין">in</a>
+      <a href="#" class="share-btn" aria-label="שתף בוואטסאפ">W</a>
+      <a href="#" class="share-btn" aria-label="שלח במייל">@</a>
+    </div>
+  </div>
+
+</header>
+
+<!-- ============================================
+     FEATURED IMAGE
+     ============================================ -->
+<div class="article-featured-image">
+  <div class="featured-img-wrap">
+    <div class="featured-img-placeholder">
+      <!-- Warm gradient placeholder — replace with actual photo -->
+    </div>
+    <div class="featured-img-overlay">
+      <p class="featured-img-caption">תמונה: מערכת הטלפוניה המתקדמת של <span lang="en">Qualia</span> מאפשרת לכל עסק להישמע כמו ארגון גדול</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     ARTICLE BODY + SIDEBAR
+     ============================================ -->
+<div class="article-layout">
+
+  <!-- MAIN ARTICLE CONTENT -->
+  <article class="article-body">
+
+    <p>
+      היה לי פעם שיחה עם בעלת בוטיק קטן בתל אביב. היא שאלה אותי: "למה כשאני מתקשרת לספק גדול, תמיד מרגישה שאני לקוחה חשובה — ואצלי, אנשים מרגישים שהם מפריעים?" התשובה לא הייתה תקציב. לא כוח אדם. הייתה הרגל. שבעה הרגלים קטנים שיוצרים חוויית תקשורת שמרגישה מקצועית, מכבדת, וגדולה מהמציאות.
+    </p>
+
+    <blockquote>
+      <p>לקוח שלא קיבל מענה תוך 30 שניות כבר מתחיל לספור. לקוח שקיבל ברכה מותאמת אישית — זוכר אתכם שנה לאחר מכן.</p>
+      <cite>— מחקר חוויית לקוח, Salesforce 2024</cite>
+    </blockquote>
+
+    <h2 data-reveal>מה הקשר בין שיחת טלפון לתפיסת מותג?</h2>
+
+    <p data-reveal>
+      כשמחקרים בוחנים כיצד לקוחות עסקיים מעריכים ספקים, המסקנה חוזרת שוב ושוב: הרושם הראשון נוצר לא ממחיר, לא מאתר אינטרנט — אלא מהרגע הראשון של קשר אנושי. וברוב המקרים, הרגע הזה הוא שיחת טלפון.
+    </p>
+
+    <p data-reveal>
+      עסקים קטנים נוטים לחשוב שהם "לא יכולים להרשות לעצמם" מנגנוני תקשורת מקצועיים. האמת היא ההיפך: הם לא יכולים להרשות לעצמם להסתדר בלעדיהם.
+    </p>
+
+    <div class="tip-header" data-reveal>
+      <div class="tip-counter">1</div>
+      <div class="tip-title">ברכה אחידה שמבדלת</div>
+    </div>
+
+    <p data-reveal>
+      כל שיחה נכנסת מתחילה ב"הלו?" — או שהיא מתחילה ב"צהריים טובים, כאן [שם החברה], [שם נציג], איך אוכל לעזור?" ההבדל הקטן הזה משדר: יש כאן ארגון. יש מסגרת. יש מישהו שחיכה לשיחה הזו.
+    </p>
+
+    <div class="tip-box" data-reveal>
+      <div class="tip-box-label">טיפ יישומי</div>
+      <p>כתבו ברכת פתיחה רשמית ותרגלו אותה עד שהיא יוצאת טבעית. שלוש מילים נוספות בפתיחה שוות יותר מדקות ארוכות של שיחה כאוטית.</p>
+    </div>
+
+    <div class="pull-quote" data-reveal>
+      <p class="pull-quote-text">
+        "מה שמבדיל ספק בינוני מספק פרימיום הוא לא<br>
+        מה שהוא <strong>עושה</strong> — אלא איך הוא <strong>נשמע</strong>."
+      </p>
+    </div>
+
+    <div class="tip-header" data-reveal>
+      <div class="tip-counter">2</div>
+      <div class="tip-title">מענה תוך שלוש צלצולים</div>
+    </div>
+
+    <p data-reveal>
+      מחקרים שוב ושוב מגלים שלקוחות מתחילים לאבד אמון לאחר ארבעה צלצולים. לא מדובר בסבלנות — מדובר בתחושה שהם נמוכים בסדר עדיפויות. שלוש צלצולים הם הסטנדרט הלא-רשמי שמסמן: "אנחנו כאן, אנחנו זמינים, אתה חשוב."
+    </p>
+
+    <p data-reveal>
+      אם אתם לא יכולים לענות תמיד — תזמינו מענה טלפוני מקצועי. זו לא הוצאה. זו השקעה בפרצוף שאתם מציגים ללקוח.
+    </p>
+
+    <h2 data-reveal>התקשורת הכתובה: הפרטים שרוב העסקים מדלגים עליהם</h2>
+
+    <p data-reveal>
+      מעבר לטלפון, קיימות שלוש נקודות מגע כתובות שמגדירות את רמת המקצועיות שלכם יותר מכרטיס ביקור:
+    </p>
+
+    <ul data-reveal>
+      <li>חתימת מייל — מלאה, עקבית, עם כתובת פיזית (אפילו אם אתם עובדים מהבית)</li>
+      <li>הודעת "לא במשרד" — ספציפית, עם תאריך חזרה, עם חלופה</li>
+      <li>אישור קבלת פנייה אוטומטי — שמודיע ש"ראינו", גם אם עוד לא ענינו</li>
+    </ul>
+
+    <div class="tip-header" data-reveal>
+      <div class="tip-counter">3</div>
+      <div class="tip-title">מספר וירטואלי קבוע — לא מספר נייד אישי</div>
+    </div>
+
+    <p data-reveal>
+      מספר נייד אישי על כרטיס ביקור עסקי אומר: "אני עסק קטן שעוד לא גדל." מספר ווירטואלי עם קידומת 072 או 073 אומר: "אנחנו פה, יש לנו משרד, יש לנו מערכת." עלות ההבדל הזה: פחות ממה שאתם חושבים. ההשפעה על תפיסת הלקוח: גדולה מאוד.
+    </p>
+
+    <blockquote data-reveal>
+      <p>מספר טלפון קבוע הוא כתובת הנפש של העסק שלכם. זה מה שאומר: "אנחנו לא הולכים לשום מקום."</p>
+    </blockquote>
+
+    <div class="tip-header" data-reveal>
+      <div class="tip-counter">4</div>
+      <div class="tip-title">תפריט IVR שמרגיש אנושי</div>
+    </div>
+
+    <p data-reveal>
+      "ללחוץ 1 למכירות, 2 לשירות, 3 לחשבונאות" — גם כשאתם רק שני עובדים, תפריט כזה יוצר תחושת ארגון. הוא לא מטעה. הוא מארגן. הלקוח מרגיש שהוא מגיע למקום הנכון, לא למישהו שייאלץ להעביר אותו.
+    </p>
+
+    <ol data-reveal>
+      <li>שמרו על תפריט קצר — לא יותר מ-3 אפשרויות</li>
+      <li>תמיד כללו אפשרות לחזרה לתפריט הראשי</li>
+      <li>הקלטו את הברכה בקול מקצועי — לא בנייד עם רקע רחוב</li>
+      <li>עדכנו שעות פעילות בהקלטה</li>
+    </ol>
+
+    <div class="pull-quote" data-reveal>
+      <p class="pull-quote-text">
+        "לקוח שיצר קשר ולא קיבל מענה —<br>
+        לא בהכרח <strong>עוזב</strong>. אבל בהחלט <strong>זוכר</strong>."
+      </p>
+    </div>
+
+    <div class="tip-header" data-reveal>
+      <div class="tip-counter">5</div>
+      <div class="tip-title">עקביות בין ערוצים</div>
+    </div>
+
+    <p data-reveal>
+      לקוח שכתב לכם במייל ואז התקשר לא אמור להסביר את עצמו מחדש. עקביות בין ערוצי תקשורת — טלפון, מייל, וואטסאפ — היא הדבר שהופך שירות מתגובתי לפרואקטיבי. זה לא דורש CRM מורכב. זה דורש הרגל: לתעד, לסמן, לזכור.
+    </p>
+
+    <div class="tip-box" data-reveal>
+      <div class="tip-box-label">יישום מיידי</div>
+      <p>פתחו קובץ גוגל שיטס פשוט עם שם לקוח, תאריך, ערוץ, ומה סוכם. עשרה שניות תיעוד שווים עשרים דקות של שיחת הבהרה.</p>
+    </div>
+
+    <div class="tip-header" data-reveal>
+      <div class="tip-counter">6</div>
+      <div class="tip-title">הכירו את "חלון הציפייה"</div>
+    </div>
+
+    <p data-reveal>
+      כשלקוח שולח מייל בשעה 18:00, הוא לא מצפה לתשובה מיידית — אבל הוא כן מצפה לתשובה עד הצהריים של יום המחרת. זה "חלון הציפייה". עסקים שמכבדים את החלון הזה נתפסים כאמינים. עסקים שמגיבים שלושה ימים אחר כך — נתפסים כלא ארגוניים, גם אם הם ענו יפה.
+    </p>
+
+    <h2 data-reveal>הרגל שביעי: להגיד "לא" בדרך שמחזקת את הקשר</h2>
+
+    <p data-reveal>
+      "לא" הוא מילה שרוב בעלי העסקים קטנים מפחדים ממנה. אבל "לא" מנוסח נכון — עם חלופה, עם כבוד, ועם הכרה בצורך — מחזק את האמון יותר מ"כן" שלא מקיימים. דוגמה:
+    </p>
+
+    <blockquote data-reveal>
+      <p>"הבקשה שלך חורגת ממה שאנחנו יכולים לעשות החודש, אבל אני רוצה שתקבל את מה שצריך — אפשר שנסכם על תאריך לרבעון הבא, או שאפנה אותך למי שיוכל לעזור עכשיו?"</p>
+    </blockquote>
+
+    <p data-reveal>
+      זו לא תשובה שלקוח שומע לרוב. ובדיוק בגלל זה — הוא יזכור אותה.
+    </p>
+
+    <hr>
+
+    <h2 data-reveal>שלב הבא: בחנו את עצמכם</h2>
+
+    <p data-reveal>
+      לפני שמאמצים את כל השבעה, כדאי לדעת איפה אתם עומדים. נסו לעשות "קריאת לקוח מסתורי" — בקשו מחבר לפנות אליכם בערוצים השונים ולתת משוב כנה על חוויית התקשורת. מה שתגלו — לפעמים מפתיע. כמעט תמיד שימושי.
+    </p>
+
+    <p data-reveal>
+      אם אתם רוצים לעשות את הקפיצה הזאת עם תמיכה מקצועית, <span lang="en">Qualia</span> מציעה סקירת תקשורת עסקית חינמית — בלי מכירות, בלי לחץ. רק תמונה אמיתית ומה ניתן לשפר.
+    </p>
+
+  </article>
+
+  <!-- SIDEBAR -->
+  <aside class="article-sidebar">
+
+    <!-- Table of Contents -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">תוכן העניינים</div>
+      <ul class="toc" id="tocList">
+        <li class="toc-active"><a href="#toc-1">ברכה שמבדלת</a></li>
+        <li><a href="#toc-2">מענה תוך 3 צלצולים</a></li>
+        <li><a href="#toc-3">תקשורת כתובה מקצועית</a></li>
+        <li><a href="#toc-4">מספר וירטואלי</a></li>
+        <li><a href="#toc-5">תפריט IVR אנושי</a></li>
+        <li><a href="#toc-6">עקביות בין ערוצים</a></li>
+        <li><a href="#toc-7">חלון הציפייה</a></li>
+        <li><a href="#toc-8">לומר "לא" נכון</a></li>
+      </ul>
+    </div>
+
+    <!-- Tags -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">תגיות</div>
+      <div class="tag-cloud">
+        <a href="#" class="tag">תקשורת עסקית</a>
+        <a href="#" class="tag">שירות לקוחות</a>
+        <a href="#" class="tag">טלפוניה</a>
+        <a href="#" class="tag">עסקים קטנים</a>
+        <a href="#" class="tag">מקצועיות</a>
+        <a href="#" class="tag">IVR</a>
+      </div>
+    </div>
+
+    <!-- Share -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">שתפו מאמר זה</div>
+      <div class="share-sidebar">
+        <a href="#" class="share-sidebar-btn">
+          <span class="share-sidebar-icon linkedin">in</span>
+          שתף בלינקדאין
+        </a>
+        <a href="#" class="share-sidebar-btn">
+          <span class="share-sidebar-icon whatsapp">W</span>
+          שלח בוואטסאפ
+        </a>
+        <a href="#" class="share-sidebar-btn">
+          <span class="share-sidebar-icon email">@</span>
+          שלח במייל
+        </a>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- ============================================
+     ARTICLE DECORATIVE DIVIDER
+     ============================================ -->
+<div class="article-divider">
+  <div class="article-divider-line"></div>
+  <div class="article-divider-ornament"></div>
+  <div class="article-divider-line"></div>
+</div>
+
+<!-- ============================================
+     AUTHOR BIO CARD
+     ============================================ -->
+<section class="author-bio-section" aria-labelledby="author-bio-name">
+  <div class="author-bio-card" data-author-bio>
+    <div class="author-bio-avatar" aria-hidden="true">רמ</div>
+    <div class="author-bio-text">
+      <div class="author-bio-name" id="author-bio-name">רן מנחם</div>
+      <div class="author-bio-role">מנהל תוכן ואסטרטגיה, <span lang="en">Qualia</span></div>
+      <p class="author-bio-description">
+        רן כותב על תקשורת עסקית, שירות לקוחות, וטכנולוגיות טלקום עבור עסקים קטנים ובינוניים. עם ניסיון של 12 שנה בתחום, הוא מאמין שתקשורת טובה היא לא עניין של תקציב — אלא של הרגלים. עבד עם מאות עסקים ישראליים בבניית מערכי תקשורת שגורמים ללקוחות לחזור.
+      </p>
+      <div class="author-bio-links">
+        <a href="#" class="author-bio-link">עוד מאמרים →</a>
+        <a href="#" class="author-bio-link">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     RELATED POSTS
+     ============================================ -->
+<section class="related-posts" aria-labelledby="related-posts-heading">
+  <div class="related-posts-header">
+    <h2 class="related-posts-heading" id="related-posts-heading">קריאה <em>נוספת</em></h2>
+    <a href="blog-archive-design.html" class="related-posts-all">כל המאמרים ←</a>
+  </div>
+
+  <div class="related-grid">
+    <a href="#" class="related-card" data-reveal>
+      <div class="related-card-img">
+        <div class="related-card-img-placeholder" style="background: linear-gradient(135deg, #2a1f1a 0%, #C4977A 100%);"></div>
+      </div>
+      <div class="related-card-content">
+        <div class="related-card-cat">מספרים וירטואליים</div>
+        <h3 class="related-card-title">מה ההבדל בין מספר 1700, 1800 ו-072 — ואיזה מתאים לכם?</h3>
+        <div class="related-card-meta">
+          <span>7 בפברואר 2025</span>
+          <span>5 דקות</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#" class="related-card" data-reveal>
+      <div class="related-card-img">
+        <div class="related-card-img-placeholder" style="background: linear-gradient(135deg, #1a2820 0%, #4a8c6e 100%);"></div>
+      </div>
+      <div class="related-card-content">
+        <div class="related-card-cat">שירות לקוחות</div>
+        <h3 class="related-card-title">איך לבנות תסריט שיחה שהנציג שלכם ישתמש בו בפועל</h3>
+        <div class="related-card-meta">
+          <span>21 בינואר 2025</span>
+          <span>6 דקות</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#" class="related-card" data-reveal>
+      <div class="related-card-img">
+        <div class="related-card-img-placeholder" style="background: linear-gradient(135deg, #1c1a2a 0%, #6c5eA8 70%, #E8863A 100%);"></div>
+      </div>
+      <div class="related-card-content">
+        <div class="related-card-cat">טלפוניה עסקית</div>
+        <h3 class="related-card-title">מרכזיה בענן ב-2025: מה השתנה ולמה זה משנה לעסקים קטנים</h3>
+        <div class="related-card-meta">
+          <span>3 בינואר 2025</span>
+          <span>8 דקות</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ============================================
+     CTA SECTION
+     ============================================ -->
+<section class="cta-section" aria-labelledby="blog-cta-heading">
+  <div class="cta-inner" data-reveal>
+    <h2 class="cta-heading" id="blog-cta-heading">
+      רוצים לבדוק איך<br>
+      <em>נשמעים?</em>
+    </h2>
+    <p class="cta-sub">
+      <span lang="en">Qualia</span> מציעה סקירת תקשורת עסקית חינמית. נבין ביחד מה עובד, מה לא — ומה קל לשנות.
+    </p>
+    <div>
+      <a href="contact-page-design.html" class="btn-secondary">קראו עוד על השירות</a>
+      <a href="contact-page-design.html" class="btn-cta">קבלו סקירה חינם ←</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<div id="site-footer"></div>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+/* --------------------------------------------------
+   CUSTOM CURSOR
+-------------------------------------------------- */
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    dot.style.left  = e.clientX - 5 + 'px';
+    dot.style.top   = e.clientY - 5 + 'px';
+    ring.style.left = e.clientX - 20 + 'px';
+    ring.style.top  = e.clientY - 20 + 'px';
+  });
+
+  document.querySelectorAll('a, button, .share-btn, .related-card, .tag').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+}
+
+/* --------------------------------------------------
+   STICKY NAV — lazy lookup so it works with deferred header injection
+-------------------------------------------------- */
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('mainNav');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+/* --------------------------------------------------
+   READING PROGRESS BAR
+-------------------------------------------------- */
+const progressBar = document.getElementById('readingProgress');
+
+function updateReadingProgress() {
+  const article = document.querySelector('.article-body');
+  if (!article) return;
+
+  const articleRect = article.getBoundingClientRect();
+  const articleTop    = article.offsetTop;
+  const articleHeight = article.offsetHeight;
+  const windowHeight  = window.innerHeight;
+  const scrollY       = window.scrollY;
+
+  const progress = Math.min(
+    Math.max((scrollY - articleTop + windowHeight * 0.4) / (articleHeight - windowHeight * 0.2), 0),
+    1
+  );
+  progressBar.style.width = (progress * 100) + '%';
+}
+
+window.addEventListener('scroll', updateReadingProgress, { passive: true });
+
+/* --------------------------------------------------
+   SCROLL REVEAL
+-------------------------------------------------- */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      // Stagger cards in the related grid
+      const delay = entry.target.closest('.related-grid')
+        ? Array.from(entry.target.parentElement.children).indexOf(entry.target) * 120
+        : 0;
+      setTimeout(() => {
+        entry.target.classList.add('revealed');
+      }, delay);
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.12,
+  rootMargin: '0px 0px -60px 0px'
+});
+
+document.querySelectorAll('[data-reveal], .author-bio-card, .related-card').forEach(el => {
+  revealObserver.observe(el);
+});
+
+// Author bio uses data-author-bio attribute
+document.querySelectorAll('[data-author-bio]').forEach(el => {
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      entries[0].target.classList.add('revealed');
+      observer.disconnect();
+    }
+  }, { threshold: 0.2 });
+  observer.observe(el);
+});
+
+/* --------------------------------------------------
+   ACTIVE TABLE OF CONTENTS (highlight on scroll)
+-------------------------------------------------- */
+const headings = document.querySelectorAll('.article-body h2, .tip-title');
+const tocItems  = document.querySelectorAll('.toc li');
+
+const tocObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocItems.forEach(li => li.classList.remove('toc-active'));
+      const idx = Array.from(headings).indexOf(entry.target);
+      if (tocItems[idx]) tocItems[idx].classList.add('toc-active');
+    }
+  });
+}, {
+  rootMargin: '-20% 0px -70% 0px',
+  threshold: 0
+});
+
+headings.forEach(h => tocObserver.observe(h));
+
+/* --------------------------------------------------
+   SMOOTH SCROLL FOR TOC LINKS
+-------------------------------------------------- */
+document.querySelectorAll('.toc a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    // No real anchor IDs in this demo, so just scroll slightly
+    window.scrollBy({ top: -80, behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
