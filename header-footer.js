@@ -224,6 +224,209 @@
     '  .footer-top { grid-template-columns: 1fr; }',
     '  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }',
     '  .footer { padding: 3rem 2rem; }',
+    '}',
+
+    /* --- Hamburger button (mobile only) --- */
+    '.nav-hamburger {',
+    '  display: none;',
+    '  flex-direction: column;',
+    '  justify-content: center;',
+    '  gap: 5px;',
+    '  background: none;',
+    '  border: none;',
+    '  cursor: pointer;',
+    '  padding: 8px;',
+    '  margin: -8px;',
+    '  border-radius: 8px;',
+    '  z-index: 1001;',
+    '}',
+    '.nav-hamburger span {',
+    '  display: block;',
+    '  width: 24px;',
+    '  height: 2px;',
+    '  background: var(--nav-warm-dark);',
+    '  border-radius: 2px;',
+    '  transition: transform 0.35s cubic-bezier(0.33, 1, 0.68, 1),',
+    '              opacity 0.25s ease,',
+    '              background 0.3s ease;',
+    '  transform-origin: center;',
+    '}',
+    '.hero-active .nav-hamburger span { background: white; }',
+    '.nav.scrolled .nav-hamburger span { background: var(--nav-warm-dark); }',
+    /* Animate three bars → X */
+    '.nav-hamburger[aria-expanded="true"] span:nth-child(1) {',
+    '  transform: translateY(7px) rotate(45deg);',
+    '}',
+    '.nav-hamburger[aria-expanded="true"] span:nth-child(2) {',
+    '  opacity: 0;',
+    '  transform: scaleX(0);',
+    '}',
+    '.nav-hamburger[aria-expanded="true"] span:nth-child(3) {',
+    '  transform: translateY(-7px) rotate(-45deg);',
+    '}',
+    '@media (max-width: 640px) {',
+    '  .nav-hamburger { display: flex; }',
+    '}',
+
+    /* --- Overlay backdrop --- */
+    '.nav-overlay {',
+    '  position: fixed;',
+    '  inset: 0;',
+    '  background: rgba(28, 25, 23, 0.55);',
+    '  backdrop-filter: blur(4px);',
+    '  -webkit-backdrop-filter: blur(4px);',
+    '  z-index: 1099;',
+    '  opacity: 0;',
+    '  pointer-events: none;',
+    '  transition: opacity 0.35s ease;',
+    '}',
+    '.nav-overlay.visible {',
+    '  opacity: 1;',
+    '  pointer-events: auto;',
+    '}',
+
+    /* --- Mobile slide panel --- */
+    '.nav-mobile-panel {',
+    '  position: fixed;',
+    '  top: 0;',
+    '  bottom: 0;',
+    '  right: 0;',
+    '  width: 85vw;',
+    '  max-width: 360px;',
+    '  background: var(--nav-parchment);',
+    '  z-index: 1100;',
+    '  display: flex;',
+    '  flex-direction: column;',
+    '  transform: translateX(110%);',
+    '  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);',
+    '  overflow-y: auto;',
+    '  -webkit-overflow-scrolling: touch;',
+    '}',
+    '.nav-mobile-panel.open {',
+    '  transform: translateX(0);',
+    '}',
+
+    /* Panel header row */
+    '.nav-mobile-header {',
+    '  display: flex;',
+    '  align-items: center;',
+    '  justify-content: space-between;',
+    '  padding: 1.4rem 1.5rem;',
+    '  border-bottom: 1px solid rgba(28,25,23,0.08);',
+    '  flex-shrink: 0;',
+    '}',
+    '.nav-mobile-logo {',
+    '  font-family: var(--nav-font-display);',
+    '  font-weight: 900;',
+    '  font-size: 1.4rem;',
+    '  color: var(--nav-warm-dark);',
+    '  text-decoration: none;',
+    '  letter-spacing: -0.02em;',
+    '}',
+    '.nav-mobile-close {',
+    '  display: flex;',
+    '  align-items: center;',
+    '  justify-content: center;',
+    '  background: none;',
+    '  border: none;',
+    '  cursor: pointer;',
+    '  width: 40px;',
+    '  height: 40px;',
+    '  border-radius: 50%;',
+    '  transition: background 0.25s ease;',
+    '  color: var(--nav-warm-dark);',
+    '  padding: 0;',
+    '  flex-shrink: 0;',
+    '}',
+    '.nav-mobile-close:hover { background: rgba(28,25,23,0.07); }',
+
+    /* Panel nav links */
+    '.nav-mobile-links {',
+    '  list-style: none;',
+    '  padding: 1rem 0;',
+    '  margin: 0;',
+    '  flex: 1;',
+    '}',
+    '.nav-mobile-links li { margin: 0; }',
+    '.nav-mobile-links a {',
+    '  display: block;',
+    '  font-family: var(--nav-font-body);',
+    '  font-size: 1rem;',
+    '  font-weight: 400;',
+    '  color: var(--nav-warm-dark);',
+    '  text-decoration: none;',
+    '  padding: 0.9rem 1.5rem;',
+    '  min-height: 48px;',
+    '  line-height: 1.4;',
+    '  display: flex;',
+    '  align-items: center;',
+    '  position: relative;',
+    '  transition: background 0.2s ease, color 0.2s ease;',
+    '}',
+    '.nav-mobile-links a:hover {',
+    '  background: rgba(232, 134, 58, 0.07);',
+    '}',
+    /* Active underline indicator */
+    '.nav-mobile-links a::after {',
+    '  content: \'\';',
+    '  position: absolute;',
+    '  bottom: 8px;',
+    '  right: 1.5rem;',
+    '  width: 0;',
+    '  height: 2px;',
+    '  background: var(--nav-orange);',
+    '  border-radius: 1px;',
+    '  transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);',
+    '}',
+    '.nav-mobile-links a.active::after { width: 1.5rem; }',
+    '.nav-mobile-links a.active { font-weight: 500; }',
+
+    /* Panel CTA */
+    '.nav-mobile-cta-wrap {',
+    '  padding: 1.2rem 1.5rem 2rem;',
+    '  flex-shrink: 0;',
+    '}',
+    '.nav-mobile-cta {',
+    '  display: block;',
+    '  width: 100%;',
+    '  padding: 0.85rem 1.5rem;',
+    '  background: var(--nav-orange);',
+    '  color: var(--nav-warm-dark);',
+    '  font-family: var(--nav-font-body);',
+    '  font-size: 0.95rem;',
+    '  font-weight: 500;',
+    '  text-align: center;',
+    '  text-decoration: none;',
+    '  border-radius: 100px;',
+    '  box-shadow: 0 2px 12px rgba(232,134,58,0.28);',
+    '  transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1),',
+    '              box-shadow 0.3s ease;',
+    '}',
+    '.nav-mobile-cta:hover {',
+    '  transform: translateY(-2px);',
+    '  box-shadow: 0 6px 24px rgba(232,134,58,0.38);',
+    '}',
+
+    /* Body scroll lock */
+    'body.nav-open {',
+    '  overflow: hidden;',
+    '}',
+
+    /* Reduced motion: skip slide, use fade */
+    '@media (prefers-reduced-motion: reduce) {',
+    '  .nav-mobile-panel {',
+    '    transform: none;',
+    '    opacity: 0;',
+    '    pointer-events: none;',
+    '    transition: opacity 0.25s ease;',
+    '  }',
+    '  .nav-mobile-panel.open {',
+    '    opacity: 1;',
+    '    pointer-events: auto;',
+    '  }',
+    '  .nav-hamburger span {',
+    '    transition: opacity 0.2s ease;',
+    '  }',
     '}'
   ].join('\n');
 
@@ -261,7 +464,33 @@
     '    <li><a href="contact-page-design.html"' + activeClass('contact') + '>צור קשר</a></li>',
     '    <li><a href="contact-page-design.html" class="nav-cta-btn">בואו נדבר</a></li>',
     '  </ul>',
-    '</nav>'
+    '  <button class="nav-hamburger" id="navHamburger" aria-label="תפריט" aria-expanded="false" aria-controls="navMobilePanel">',
+    '    <span></span>',
+    '    <span></span>',
+    '    <span></span>',
+    '  </button>',
+    '</nav>',
+    '<div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>',
+    '<div class="nav-mobile-panel" id="navMobilePanel" role="dialog" aria-modal="true" aria-label="תפריט ניווט">',
+    '  <div class="nav-mobile-header">',
+    '    <a href="index.html" class="nav-mobile-logo">Qualia</a>',
+    '    <button class="nav-mobile-close" id="navMobileClose" aria-label="סגור תפריט">',
+    '      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">',
+    '        <line x1="4" y1="4" x2="16" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    '        <line x1="16" y1="4" x2="4" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    '      </svg>',
+    '    </button>',
+    '  </div>',
+    '  <ul class="nav-mobile-links" id="navMobileLinks">',
+    '    <li><a href="about-page-design.html"' + activeClass('about') + '>אודות</a></li>',
+    '    <li><a href="services-page-design.html"' + activeClass('services') + '>שירותים</a></li>',
+    '    <li><a href="blog-archive-design.html"' + activeClass('blog') + '>הבלוג</a></li>',
+    '    <li><a href="contact-page-design.html"' + activeClass('contact') + '>צור קשר</a></li>',
+    '  </ul>',
+    '  <div class="nav-mobile-cta-wrap">',
+    '    <a href="contact-page-design.html" class="nav-mobile-cta">בואו נדבר</a>',
+    '  </div>',
+    '</div>'
   ].join('\n');
 
   /* ── Canonical footer HTML ───────────────────────────────── */
@@ -336,6 +565,9 @@
 
     /* Set up nav scroll behaviour */
     initNav();
+
+    /* Set up mobile slide-in nav */
+    initMobileNav();
   });
 
   /* ── Nav scroll behaviour ────────────────────────────────── */
@@ -360,6 +592,135 @@
 
     window.addEventListener('scroll', updateNav, { passive: true });
     updateNav();
+  }
+
+  /* ── Mobile nav behaviour ────────────────────────────────── */
+  function initMobileNav() {
+    var hamburger  = document.getElementById('navHamburger');
+    var panel      = document.getElementById('navMobilePanel');
+    var overlay    = document.getElementById('navOverlay');
+    var closeBtn   = document.getElementById('navMobileClose');
+    var mobileLinks = document.getElementById('navMobileLinks');
+
+    if (!hamburger || !panel || !overlay) return;
+
+    var isOpen = false;
+
+    /* ── Scrollbar width measurement ── */
+    function getScrollbarWidth() {
+      return window.innerWidth - document.documentElement.clientWidth;
+    }
+
+    /* ── Open panel ── */
+    function openPanel() {
+      if (isOpen) return;
+      isOpen = true;
+
+      /* Compensate for scrollbar disappearing */
+      var sbw = getScrollbarWidth();
+      if (sbw > 0) {
+        document.body.style.paddingInlineEnd = sbw + 'px';
+      }
+
+      document.body.classList.add('nav-open');
+      panel.classList.add('open');
+      overlay.classList.add('visible');
+      hamburger.setAttribute('aria-expanded', 'true');
+      overlay.removeAttribute('aria-hidden');
+
+      /* Move focus into the panel: first focusable element */
+      requestAnimationFrame(function () {
+        var focusable = getFocusable();
+        if (focusable.length) focusable[0].focus();
+      });
+    }
+
+    /* ── Close panel ── */
+    function closePanel() {
+      if (!isOpen) return;
+      isOpen = false;
+
+      document.body.classList.remove('nav-open');
+      document.body.style.paddingInlineEnd = '';
+      panel.classList.remove('open');
+      overlay.classList.remove('visible');
+      hamburger.setAttribute('aria-expanded', 'false');
+      overlay.setAttribute('aria-hidden', 'true');
+
+      /* Return focus to hamburger */
+      hamburger.focus();
+    }
+
+    /* ── Collect focusable elements inside panel ── */
+    function getFocusable() {
+      return Array.prototype.slice.call(
+        panel.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+    }
+
+    /* ── Focus trap ── */
+    function trapFocus(e) {
+      if (!isOpen) return;
+      if (e.key !== 'Tab') return;
+
+      var focusable = getFocusable();
+      if (!focusable.length) return;
+
+      var first = focusable[0];
+      var last  = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        /* Shift+Tab: if at first element, wrap to last */
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        /* Tab: if at last element, wrap to first */
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    /* ── ESC key closes panel ── */
+    function handleKeydown(e) {
+      if (e.key === 'Escape' && isOpen) {
+        closePanel();
+      }
+      trapFocus(e);
+    }
+
+    /* ── Wire up events ── */
+    hamburger.addEventListener('click', function () {
+      if (isOpen) { closePanel(); } else { openPanel(); }
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closePanel);
+    }
+
+    overlay.addEventListener('click', closePanel);
+
+    document.addEventListener('keydown', handleKeydown);
+
+    /* Close panel when any mobile nav link is clicked */
+    if (mobileLinks) {
+      mobileLinks.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') {
+          closePanel();
+        }
+      });
+    }
+
+    /* Also close if the CTA link is clicked */
+    var ctaLink = panel.querySelector('.nav-mobile-cta');
+    if (ctaLink) {
+      ctaLink.addEventListener('click', closePanel);
+    }
   }
 
 })();
